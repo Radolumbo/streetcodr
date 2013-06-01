@@ -108,10 +108,10 @@
         <br>
         <button type="button">Go</button>
     </div>
-    <div id="new-round-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+    <div id="new-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
         <div>Wins:</div>
         <div>Losses:</div>
-        <button type="button">New Round</button>
+        <button type="button">Find an opponent</button>
     </div>
   </div>
     <script>
@@ -218,8 +218,13 @@
       }
 
       //modal behaviors
-      function showStartWindow(){
-
+      function showMatchModal(){
+        popup($("#new-match-modal").clone());
+        $("#new-match-modal button").click(function(){
+          var name = $("#name");
+          user = newUser(id,name);
+          callback();
+        });
       }
 
       function askUserForName(callback){
@@ -249,10 +254,10 @@
       $(function(){
         user = getCurrentUser();
         if(!user){
-          askUserForName(showStartWindow);
+          askUserForName(showMatchModal);
         }
         else{
-          showStartWindow();
+          showMatchModal();
         }
       });
     </script>
