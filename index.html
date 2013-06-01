@@ -189,10 +189,6 @@
                s4() + '-' + s4() + s4() + s4();
       }
 
-      function FB(path){
-        return new Firebase("https://streetcodr.firebaseio.com" + path);
-      }
-
 //*****************************CLASSES*************************************
       function User(id,name){
         var self = this;
@@ -201,6 +197,10 @@
       }
 
 //*****************************FIREBASE FUNCTIONS*******************************
+      function FB(path){
+        return new Firebase("https://streetcodr.firebaseio.com" + path);
+      }
+
       function getCurrentUser(){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
@@ -217,13 +217,11 @@
         FB("/users/" + id + "/name").set(name);
       }
 
-      //modal behaviors
+ //***************************MODALS********************************
       function showMatchModal(){
         popup($("#new-match-modal").clone());
         $("#new-match-modal button").click(function(){
-          var name = $("#name");
-          user = newUser(id,name);
-          callback();
+          getOpponent();
         });
       }
 
@@ -264,6 +262,9 @@
 		
       }
 
+      function getOpponent(){
+        
+      }
 //******************************INITIALIZATION***********************************
       $(function(){
         user = getCurrentUser();
