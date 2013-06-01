@@ -102,7 +102,8 @@
       </div>
     </div>
   <div id="modals" style="display:none;">
-    <div id="user-name-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+    <div id="user-name-modal" style="text-align:center;height:200px;width:300px;padding-top:50px;">
+        <h2>Welcome to StreetCodr!</h2>
         <label for="name">Enter your name:</label>
         <input type="text" name="name" id="name">
         <br>
@@ -123,7 +124,7 @@
       //Challenges data
       var challenges = [
         {"name": "String Reverse",
-        "text": "Write a function that takes a string as input, and outputs the reverse.".
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
         "testcases":
           [
             {
@@ -177,6 +178,10 @@
         $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
       }
 
+      function clearSceens() {
+
+      }
+
 //*****************************UTILITY FUNCTIONS*******************************
         function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -201,20 +206,31 @@
         return new Firebase("https://streetcodr.firebaseio.com" + path);
       }
 
-      function getCurrentUser(){
+      function getCurrentUser(callback){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
-          var name = FB("/users/" + id + "/name").val();
-          return new user(id,name);
+          FB("/users/" + id + "/name").on('value', function(data) {
+            user = new User(id,data.val());
+            callback(user);
+          });          
         }
         else {
-          return null;
+          callback(null);
         }
       }
 
       function newUser(id,name){
         user = new User(id,name);
+        $.cookie("userId",id);
         FB("/users/" + id + "/name").set(name);
+      }
+
+      function addUserToQueue() {
+
+      }
+
+      function getUserFromQueue() {
+
       }
 
  //***************************MODALS********************************
@@ -229,7 +245,7 @@
         var id = guid();
         popup($("#user-name-modal").clone());
         $("#user-name-modal button").click(function(){
-          var name = $("#name");
+          var name = $("#name").val();
           user = newUser(id,name);
           callback();
         });
@@ -257,23 +273,34 @@
         oppRef.child('wins').set(0);
         userRef.child('powrups').set([]);
         userRef.child('powrups').set([]);
-    
-    
-    
       }
 
       function getOpponent(){
-        
+        opponent = getUserFromQueue();
+        if(!opponent) {
+          addUserToQueue();
+          waitForSession();
+        }
+        else {
+          createSession(opponent.id);
+        }
       }
+
+      function waitForSession() {
+
+      }
+
 //******************************INITIALIZATION***********************************
       $(function(){
-        user = getCurrentUser();
-        if(!user){
-          askUserForName(showMatchModal);
-        }
-        else{
-          showMatchModal();
-        }
+        getCurrentUser(function(user){
+          if(!user){
+            askUserForName(showMatchModal);
+          }
+          else{
+            showMatchModal();
+          }
+        });
       });
+
     </script>
 </body>
