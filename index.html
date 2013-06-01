@@ -119,11 +119,12 @@
       var user = null;
       var opponent = null;
       var session = null;
+      var winLimit = 3;
 
       //Challenges data
       var challenges = [
         {"name": "String Reverse",
-        "text": "Write a function that takes a string as input, and outputs the reverse.".
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
         "testcases":
           [
             {
@@ -246,8 +247,8 @@
         var firepad2 = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
     
-    
-        var sessionRef = FB('/session/' + guid());
+        var sessionId = guid();
+        var sessionRef = FB('/session/' + sessionId);
     
         var userRef = sessionRef.child(user.id);
         var oppRef = sessionRef.child(opponentId);
@@ -256,10 +257,45 @@
         userRef.child('wins').set(0);
         oppRef.child('wins').set(0);
         userRef.child('powrups').set([]);
-        userRef.child('powrups').set([]);
+        oppRef.child('powrups').set([]);
+        
+        
+                    
+        nextRound(sessionId, 1);
     
-    
-    
+      }
+      
+      //Initialize the next round
+      //If winnerId is null, it's the first round! Yay!
+      //Also handles the end of the game (if wins for winner > winLimit)
+      function nextRound(sessionId, roundNumber, winnerId){
+        
+        
+        getWins(sessionId, winnerId,function(wins){
+          if( wins >= winLimit){
+          
+            
+          
+          }
+          else{
+          
+            
+          
+          }   
+        });
+      }
+      
+      //Get the number of wins for that user in that session
+      function getWins(sessionId, userId, callback){
+        session = FB('/session/' + sessionId).val();
+        var wins=0;
+        for(var i = 1; i<=5; i++){
+          var roundWinner = session.round[i];
+          if(userId == roundWinner){
+            wins++;
+          }  
+        }  
+        callback(wins);
       }
 
       function getOpponent(){
