@@ -1,0 +1,230 @@
+<head>
+  <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+  <link rel="stylesheet" href="codemirror.css" />
+  <script src="codemirror.js"></script>
+  <link rel="stylesheet" href="firepad.css" />
+  <script src="firepad-min.js"></script>
+  <script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script  type="text/javascript" src="http://cdn.jsdelivr.net/jquery.cookie/1.3/jquery.cookie.js"></script>
+  <style>
+    .firepad {
+      width: 500px;
+      height: 400px;
+      background-color: #DDD;
+    }
+    .CodeMirror {
+      background-color: #DDD;
+    }
+    #dialog-overlay {
+    /* set it to fill the whole screen */
+    width:100%; 
+    height:100%;
+     
+    /* transparency for different browsers */
+    filter:alpha(opacity=50); 
+    -moz-opacity:0.5; 
+    -khtml-opacity: 0.5; 
+    opacity: 0.5; 
+    background:#000; 
+ 
+    /* make sure it appear behind the dialog box but above everything else */
+    position:absolute; 
+    top:0; left:0; 
+    z-index:3000; 
+ 
+    /* hide it by default */
+    display:none;
+  }
+
+  #dialog-box {
+      /* css3 drop shadow */
+      -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+       
+      /* css3 border radius */
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+       
+      background:#fff;
+      /* styling of the dialog box, i have a fixed dimension for this demo */
+       
+      /* make sure it has the highest z-index */
+      position:absolute; 
+      z-index:5000; 
+   
+      /* hide it by default */
+      display:none;
+  }
+
+  #dialog-box .dialog-content {
+      /* style the content */
+      text-align:left; 
+      //padding:10px; 
+      //margin:13px;
+      color:#666;
+  }
+
+  .modal-x-button {
+     font-family:monospace;
+      font-size:18px;
+      position:absolute;
+      right:5px;
+      top:0px;
+  }
+  .modal-x-button:hover {
+      cursor:hand;
+      cursor:pointer;
+  }
+
+  </style>
+</head>
+<body>
+  <div>
+    <h1>StreetCodr</h1>
+  </div>
+  <hr>
+  <div style="display:inline-block;margin-right:20px;">
+    <span id="your_name"></span> (You):
+    <div id="firepad1"></div>
+    <a href="#">SUBMIT</a>
+  </div>
+  <div style="display:inline-block;">
+    Them:
+    <div id="firepad2"></div>
+    <a href="#">SUBMIT</a>
+  </div>
+  <div id="dialog-overlay">
+    </div>
+    <div id="dialog-box">
+      <div class="dialog-content">
+        <div id="dialog-message">
+        </div>
+      </div>
+    </div>
+  <div id="modals" style="display:none;">
+    <div id="user-name-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+        <label for="name">Enter your name:</label>
+        <input type="text" name="name" id="name">
+        <br>
+        <button type="button">Go</button>
+    </div>
+    <div id="new-round-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+        <div>Wins:</div>
+        <div>Losses:</div>
+        <button type="button">New Round</button>
+    </div>
+  </div>
+    <script>
+      //global variables
+      var user = null;
+      var opponent = null;
+
+      // ui functions
+      $(document).ready(function () {   
+        $(window).resize(function () {
+          if (!$('#dialog-box').is(':hidden')) popup();
+        });
+        $(window).scroll(function () {
+          if (!$('#dialog-box').is(':hidden')) popup();
+        });
+      });
+ 
+      function close_popup() {
+        $('#dialog-overlay, #dialog-box').hide();       
+        return false;
+      }
+
+      function popup(message) {
+        var maskHeight = window.innerHeight;
+        var outerHeight = $(document).height();
+        var maskWidth = $(window).width();
+
+        $('#dialog-message').html(message);
+
+        var dialogTop =  $(window).scrollTop() + (maskHeight/2) - ($('#dialog-box').height()/2);
+        var dialogLeft = (maskWidth/2) - ($('#dialog-box').width()/2);
+         
+        $('#dialog-overlay').css({height:outerHeight, width:maskWidth}).show();
+        $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
+      }
+
+      // utility functions
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+                   .toString(16)
+                   .substring(1);
+      };
+
+      function guid() {
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+               s4() + '-' + s4() + s4() + s4();
+      }
+
+      function getFirebaseRef(path){
+        return new Firebase("https://streetcodr.firebaseio.com" + path);
+      }
+
+      // classes
+      function User(id,name){
+        var self = this;
+        self.id = id;
+        self.name = name;
+      }
+
+      //firebase functions
+      function getCurrentUser(){
+        if($.cookie("userId")!=null) {
+          var id = $.cookie("userId");
+          var name = getFirebaseRef("/users/" + id + "/name").val();
+          return new user(id,name);
+        }
+        else {
+          return null;
+        }
+      }
+
+      function setCurrentUser(id,name){
+        user = new User(id,name);
+        getFirebaseRef("/users/" + id + "/name").set(name);
+      }
+
+      //modal behaviors
+      function showStartWindow(){
+
+      }
+
+      function askUserForName(callback){
+        var id = guid();
+        popup($("#user-name-modal").clone());
+        $("#user-name-modal button").click(function(){
+          var name = $("#name");
+          user = setUser(id,name);
+          callback();
+        });
+      }
+
+      //game engine
+      function startRound(userId, opponentId){
+        var queue =  getFirebaseRef('/users/queue');
+        var firepadRef1 = getFirebaseRef('/users/' + userId + '/code');
+        var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
+        var firepad1 = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
+            { richTextShortcuts: true, richTextToolbar: true });
+        var firepadRef2 = getFirebaseRef('/users/' + opponentId + "/code");
+        var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
+        var firepad2 = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
+            { richTextShortcuts: true, richTextToolbar: true });
+      }
+
+      //init section
+      $(function(){
+        user = getUser();
+        if(!user){
+          askUserForName(showStartWindow);
+        }
+        else{
+          showStartWindow();
+        }
+      });
+    </script>
+</body>
