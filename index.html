@@ -121,6 +121,9 @@
       var opponent = null;
       var session = null;
       var winLimit = 3;
+      var usedChallenges = [];
+      var roundNumber = 1;
+      var challenge = null;
 
       //Challenges data
       var challenges = [
@@ -178,9 +181,24 @@
         $('#dialog-overlay').css({height:outerHeight, width:maskWidth}).show();
         $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
       }
+      
+      function updateScreen(winnerId) {
+        
+        clearScreen();
+        //set challenge text
+        if(winnerId != undefined){
+          addWin(winnerId);
+        }
+        
+      }
 
-      function clearSceens() {
+      function clearSceen() {
 
+      }
+      
+      function addWin(winnerId){
+        //use winnerId to determine if you won or your opponent won
+        //add a little dot to show the win or whatever
       }
 
 //*****************************UTILITY FUNCTIONS*******************************
@@ -206,11 +224,36 @@
       function FB(path){
         return new Firebase("https://streetcodr.firebaseio.com" + path);
       }
+      
+      //Get the number of wins for that user in that session
+      function getWins(sessionId, userId, callback){
+        FB('/session/' + sessionId).once('value', function(data) {
+          var wins=0;
+          for(var i = 1; i<=5; i++){
+            var round = data.val().round[i.toString()];
+            if(round != undefined){
+              var roundWinner = round.winner;
+            }
+            if(userId == roundWinner){
+              wins++;
+            }  
+          }  
+          callback(wins);
+        });
+      }
+      
+      //Set opponent by id
+      function setOpponent(id, callback){
+        FB('/users/' + id).once('value', function(data) {
+          opponent = data.val();
+          callback();
+        });
+      }
 
       function getCurrentUser(callback){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
-          FB("/users/" + id + "/name").on('value', function(data) {
+          FB("/users/" + id + "/name").once('value', function(data) {
             user = new User(id,data.val());
             callback(user);
           });          
@@ -268,17 +311,23 @@
     
         var userRef = sessionRef.child(user.id);
         var oppRef = sessionRef.child(opponentId);
-    
-        //Initialize their wins to 0 and their power ups to empty
-        userRef.child('wins').set(0);
-        oppRef.child('wins').set(0);
-        userRef.child('powrups').set([]);
-        oppRef.child('powrups').set([]);
         
         
-                    
-        nextRound(sessionId, 1);
-
+        
+        setOpponent(opponentId,function(){
+          //Initialize their wins to 0 and their power ups to empty
+          userRef.child('wins').set(0);
+          oppRef.child('wins').set(0);
+          userRef.child('powrups').set([]);
+          oppRef.child('powrups').set([]);
+          
+          //Clear variables;
+          usedChallenges = [];
+          roundNumber = 1; 
+          challenge = null;
+                      
+          nextRound(sessionId, roundNumber);
+        });
       }
       
       //Initialize the next round
@@ -286,33 +335,60 @@
       //Also handles the end of the game (if wins for winner > winLimit)
       function nextRound(sessionId, roundNumber, winnerId){
         
+        roundNumber++;
         
-        getWins(sessionId, winnerId,function(wins){
-          if( wins >= winLimit){
+        if(roundNumber == 2){ //It's the first round
           
+          challenge = getChallenge();
+          usedChallenges.push(challenge.name);
+          FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
+          updateScreen();
+          
+        }
+        else{
+        
+          getWins(sessionId, winnerId,function(wins){
+            if( wins >= winLimit){
             
-          
-          }
-          else{
-          
+              //session over!
             
-          
-          }   
-        });
+            }
+            else{ //Not the last round yet
+            
+              challenge = getChallenge();
+              usedChallenges.push(challenge.name);
+              FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
+              updateScreen();
+            }   
+          });
+        }
+        
       }
       
-      //Get the number of wins for that user in that session
-      function getWins(sessionId, userId, callback){
-        session = FB('/session/' + sessionId).val();
-        var wins=0;
-        for(var i = 1; i<=5; i++){
-          var roundWinner = session.round[i];
-          if(userId == roundWinner){
-            wins++;
-          }  
-        }  
-        callback(wins);
+      //Turn the name of a challenge into its index
+      function challengeNameToIndex(name){
+        
+        for(var i in challenges){
+          if(challenges[i].name == name){
+            return i;
+          }
+        }
+        return null;
       }
+      
+      //Get a random, not-yet-used challenge
+      function getChallenge(){
+        
+        var index = Math.round(Math.random() * (challenges.length - 1));
+        
+        while(usedChallenges.indexOf(challenges[index].name) >= 0){
+          index = Math.round(Math.random() * (challenges.length - 1));
+        }
+        
+        return challenges[index];
+        
+      }
+      
 
       function getOpponent(){
         opponent = getUserFromQueue();
