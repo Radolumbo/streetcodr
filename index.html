@@ -217,7 +217,7 @@
         FB("/users/" + id + "/name").set(name);
       }
 
-      //modal behaviors
+//***************************MODALS********************************
       function showStartWindow(){
 
       }
@@ -233,8 +233,8 @@
       }
 
 //***************************GAME ENGINE********************************
-      function createSession(userId, opponentId){
-        var firepadRef1 = FB('/users/' + userId + '/code');
+      function createSession(opponentId){
+        var firepadRef1 = FB('/users/' + user.id + '/code');
         var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
         var firepad1 = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: true });
@@ -242,21 +242,21 @@
         var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
         var firepad2 = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
-		
-		
-		var sessionRef = FB('/session/' + guid());
-		
-		var userRef = sessionRef.child(userId);
-		var oppRef = sessionRef.child(opponentId);
-		
-		//Initialize their wins to 0 and their power ups to empty
-		userRef.child('wins').set(0);
-		oppRef.child('wins').set(0);
-		userRef.child('powrups').set([]);
-		userRef.child('powrups').set([]);
-		
-		
-		
+    
+    
+        var sessionRef = FB('/session/' + guid());
+    
+        var userRef = sessionRef.child(user.id);
+        var oppRef = sessionRef.child(opponentId);
+    
+        //Initialize their wins to 0 and their power ups to empty
+        userRef.child('wins').set(0);
+        oppRef.child('wins').set(0);
+        userRef.child('powrups').set([]);
+        userRef.child('powrups').set([]);
+    
+    
+    
       }
 
 //******************************INITIALIZATION***********************************
