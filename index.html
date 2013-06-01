@@ -281,6 +281,7 @@
 
       function getUserFromQueue(callback) {
         FB("/queue").once('value', function(data){
+          FB("/queue").set(null);
           callback(data.val());
         });
       }
@@ -413,12 +414,23 @@
       }
 
       function waitForSession() {
+        session = FB("/session");
+        session.once('child_changed',function(new_session){
+          var users = new_session.val().users;
+          for(var i in users){
+            if(i!=user.id){
+              setOpponent(i,function(){
 
+              });
+            }
+          }
+        });
       }
 
       function evaluate(code){
         for(var i in challenge.testcases){
-          if(challenge.testcases[i].input != challenge.testcases[i].output) {
+          eval("var __evaluator = " + code);
+          if(__evaluator(challenge.testcases[i].input) != challenge.testcases[i].output) {
             return false;
           }
         }
