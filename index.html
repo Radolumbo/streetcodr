@@ -118,6 +118,12 @@
       //global variables
       var user = null;
       var opponent = null;
+      var session = null;
+
+      //Challenges data
+
+
+      //Powr hash
 
       // ui functions
       $(document).ready(function () {   
@@ -130,7 +136,7 @@
       });
  
       function close_popup() {
-        $('#dialog-overlay, #dialog-box').hide();       
+        $('#dialog-overlay, #dialog-box').fadeOut('fast');       
         return false;
       }
 
@@ -160,7 +166,7 @@
                s4() + '-' + s4() + s4() + s4();
       }
 
-      function getFirebaseRef(path){
+      function FB(path){
         return new Firebase("https://streetcodr.firebaseio.com" + path);
       }
 
@@ -175,7 +181,7 @@
       function getCurrentUser(){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
-          var name = getFirebaseRef("/users/" + id + "/name").val();
+          var name = FB("/users/" + id + "/name").val();
           return new user(id,name);
         }
         else {
@@ -183,9 +189,9 @@
         }
       }
 
-      function setCurrentUser(id,name){
+      function newUser(id,name){
         user = new User(id,name);
-        getFirebaseRef("/users/" + id + "/name").set(name);
+        FB("/users/" + id + "/name").set(name);
       }
 
       //modal behaviors
@@ -198,13 +204,13 @@
         popup($("#user-name-modal").clone());
         $("#user-name-modal button").click(function(){
           var name = $("#name");
-          user = setUser(id,name);
+          user = newUser(id,name);
           callback();
         });
       }
 
       //game engine
-      function startRound(userId, opponentId){
+      function createSession(userId, opponentId){
         var queue =  getFirebaseRef('/users/queue');
         var firepadRef1 = getFirebaseRef('/users/' + userId + '/code');
         var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
@@ -218,7 +224,7 @@
 
       //init section
       $(function(){
-        user = getUser();
+        user = getCurrentUser();
         if(!user){
           askUserForName(showStartWindow);
         }
