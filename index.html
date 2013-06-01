@@ -115,7 +115,7 @@
     </div>
   </div>
     <script>
-      //global variables
+//******************************GLOBAL VARIABLES*******************************
       var user = null;
       var opponent = null;
       var session = null;
@@ -148,7 +148,7 @@
         }
       }
 
-      // ui functions
+//****************************UI FUNCTIONS**************************************
       $(document).ready(function () {   
         $(window).resize(function () {
           if (!$('#dialog-box').is(':hidden')) popup();
@@ -177,8 +177,8 @@
         $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
       }
 
-      // utility functions
-      function s4() {
+//*****************************UTILITY FUNCTIONS*******************************
+        function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
                    .toString(16)
                    .substring(1);
@@ -193,14 +193,14 @@
         return new Firebase("https://streetcodr.firebaseio.com" + path);
       }
 
-      // classes
+//*****************************CLASSES*************************************
       function User(id,name){
         var self = this;
         self.id = id;
         self.name = name;
       }
 
-      //firebase functions
+//*****************************FIREBASE FUNCTIONS*******************************
       function getCurrentUser(){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
@@ -237,20 +237,34 @@
         });
       }
 
-      //game engine
+//***************************GAME ENGINE********************************
       function createSession(userId, opponentId){
-        var queue =  getFirebaseRef('/users/queue');
-        var firepadRef1 = getFirebaseRef('/users/' + userId + '/code');
+        var firepadRef1 = FB('/users/' + userId + '/code');
         var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
         var firepad1 = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: true });
-        var firepadRef2 = getFirebaseRef('/users/' + opponentId + "/code");
+        var firepadRef2 = FB('/users/' + opponentId + "/code");
         var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
         var firepad2 = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
+		
+		
+		var sessionRef = FB('/session/' + guid());
+		
+		var userRef = sessionRef.child(userId);
+		var oppRef = sessionRef.child(opponentId);
+		
+		//Initialize their wins to 0 and their power ups to empty
+		userRef.child('wins').set(0);
+		oppRef.child('wins').set(0);
+		userRef.child('powrups').set([]);
+		userRef.child('powrups').set([]);
+		
+		
+		
       }
 
-      //init section
+//******************************INITIALIZATION***********************************
       $(function(){
         user = getCurrentUser();
         if(!user){
