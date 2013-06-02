@@ -154,8 +154,8 @@
     <h1 style="margin-left:20px;font-family:monospace;font-size:40px;font-weight:normal;">streetcodr</span></h1>
   </div>
   <br>
-  <div style="width:1000px;margin:0 auto;">
-    <div style="margin-right:10px;margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
+  <div style="width:1010px;margin:0 auto;">
+    <div style="margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
       <div onclick="usePowr('Freeze');" class="icon ice">
         <img style="height:30px;width:30px;" src="ice.png"/>
       </div>
@@ -484,15 +484,6 @@
       }
 
       function clearScreen() {
-        if(opponentFirepadReady){
-          if(challenge){
-            opponentFirepad.setText("");
-            opponentFirepad.setText(challenge.header);
-          }
-          else{
-            opponentFirepad.setText("");
-          }
-        }
         if(userFirepadReady){
           if(challenge){
             userFirepad.setText("");
