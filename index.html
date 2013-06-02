@@ -503,7 +503,7 @@
               userFirepad.on('ready', function() {
                 userFirepadReady = true;
               });
-              var firepadRef2 = FB('/users/' + opponentId + "/code");
+              var firepadRef2 = FB('/users/' + opponent.id + "/code");
               var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
               opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
                  { richTextShortcuts: true, richTextToolbar: false });
