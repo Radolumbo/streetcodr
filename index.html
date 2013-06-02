@@ -87,8 +87,11 @@
     <span id="your_name"></span> (You):
     <div id="firepad1"></div>
     <a href="#">SUBMIT</a>
+    <div>
+      Your wins: <span id="#user-wins">0</span>
+    </div>
   </div>
-  <div id="challenge-container" style="display:inline-block;">
+  <div id="challenge-container" style="display:inline-block;vertical-align:top;">
     <div id="challenge-name">
     </div>
     <div id="challenge-text">
@@ -97,7 +100,10 @@
   <div style="display:inline-block;">
     <span id="their_name"></span>(Them):
     <div id="firepad2"></div>
-    <a href="#">SUBMIT</a>
+    <a href="#" onclick="submitCode();">SUBMIT</a>
+    <div>
+      Their wins: <span id="#opponent-wins">0</span>
+    </div>
   </div>
   <div id="dialog-overlay">
     </div>
@@ -270,13 +276,13 @@
       }
       
       function isSessionOver(callback){
-        getWins(user.id, function(wins){
+        getWins(session.id,user.id, function(wins){
           if(wins >= winLimit){
             //we're done
             callback(true,user.id);
           }
           else{
-            getWins(opponent.id, function(wins){
+            getWins(session.id, opponent.id, function(wins){
               if(wins>=winLimit){
                 //we;re done
                 callback(true,opponent.id);
@@ -367,12 +373,24 @@
       }
 
 //***************************GAME ENGINE********************************
+     function submitCode(){
+       var code = userFirepad.getText();
+       if(evaluate(code)){
+         nextRound(session.id,getCurrentRound().id,user.id);
+       }
+       else{
+        alert("you are wrong and should be punished");
+       }
+     }
+
       function getCurrentRound(){
         rounds = session.round;
         for(var r in rounds){
           var round = r;
         }
-        return rounds[round];
+        var badVariableName = rounds[round];
+        badVariableName.id = round;
+        return badVariableName;
       }
 
       function createSession(opponentId){
@@ -522,7 +540,7 @@
                       showEndMatchModal(winnerId);
                     }
                     else{
-                      FB("/sesson/" + new_session.id).once("value",function(data){
+                      FB("/session/" + new_session.id).once("value",function(data){
                         session = data.val();
                         session.id = data.name();
                         updateScreen(true);
