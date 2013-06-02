@@ -424,7 +424,10 @@
           challenge = getChallenge();
           usedChallenges.push(challenge.name);
           FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
-          updateScreen(true);
+          FB('/session/' + sessionId).once('value',function(data){
+                session = data.val();
+                updateScreen(true);
+                });;
           
         }
         else{
@@ -438,7 +441,10 @@
               challenge = getChallenge();
               usedChallenges.push(challenge.name);
               FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
-              updateScreen(true,winnerId);
+              FB('/session/' + sessionId).once('value',function(data){
+                session = data.val();
+                updateScreen(true,winnerId);
+                });
             }   
           });
         }
