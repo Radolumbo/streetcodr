@@ -17,6 +17,11 @@
       font-size: 30px;
     }
 
+    .wins{
+      color:#E55;
+      font-family: "Lucida Console", Monaco, monospace;
+    }
+
     #firepad1{
       width: 350px;
       height: 400px;
@@ -135,7 +140,7 @@
       <span class="name" id="your_name"></span> (You):
       <div id="firepad1"></div>
       <div>
-        Wins: <span id="user-wins">0</span>
+        <span class="wins">Wins:</span> <span id="user-wins">0</span>
       </div>
       <a href="#" class="submit-button" onclick="submitCode();">SUBMIT</a>
     </div>
@@ -150,7 +155,7 @@
         <span class="name"  id="their_name"></span>(Them):
         <div id="firepad2"></div>
         <div>
-          Wins: <span id="opponent-wins">0</span>
+          <span class="wins">Wins:</span> <span id="opponent-wins">0</span>
         </div>
       </div>
       <div style="position:absolute;top:0;left:0;height:100%;width:100%;">
