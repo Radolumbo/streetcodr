@@ -409,7 +409,7 @@
           roundNumber = 1; 
           challenge = null;
                       
-          nextRound(sessionId, roundNumber);
+          setTimeout(function(){nextRound(sessionId, roundNumber)},100);
         });
       }
       
@@ -511,6 +511,7 @@
               opponentFirepad.on('ready', function() {
                 opponentFirepadReady = true;
               });
+              updateScreen(true);
                 var rounds = FB("/session/" + new_session.id + "/round");
                 rounds.on("child_changed",function(round){
                   isSessionOver(function(isOver,winnerId){
