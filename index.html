@@ -2,6 +2,7 @@
   <script src="https://cdn.firebase.com/v0/firebase.js"></script>
   <link rel="stylesheet" href="codemirror.css" />
   <script src="codemirror.js"></script>
+  <script src="javascript.js"></script>
   <link rel="stylesheet" href="firepad.css" />
   <script src="firepad-min.js"></script>
   <script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -15,6 +16,12 @@
       color:#E55;
       font-family: "Lucida Console", Monaco, monospace;
       font-size: 30px;
+    }
+
+    h2{
+      color:#E55;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 24px;
     }
 
     .wins{
@@ -32,15 +39,12 @@
     }
 
     .submit-button {
-    font: bold 11px Arial;
+    font-family: "Lucida Console", Monaco, monospace;
     text-decoration: none;
-    background-color: #EEEEEE;
-    color: #333333;
+    font-size: 20px;
+    background-color: #2259CC;
+    color: #FFF;
     padding: 2px 6px 2px 6px;
-    border-top: 1px solid #CCCCCC;
-    border-right: 1px solid #333333;
-    border-bottom: 1px solid #333333;
-    border-left: 1px solid #CCCCCC;
    }
 
     .name{
@@ -137,12 +141,14 @@
   <hr>
   <div style="width:900px;margin:0 auto;">
     <div style="vertical-align:top;display:inline-block;margin-right:20px;">
-      <span class="name" id="your_name"></span> (You):
+      <span class="name" id="your_name"></span> &nbsp;&nbsp;&nbsp;<span style="font-size:24px;color:#CC2;">(You)</span>
       <div id="firepad1"></div>
       <div>
         <span class="wins">Wins:</span> <span id="user-wins">0</span>
       </div>
-      <a href="#" class="submit-button" onclick="submitCode();">SUBMIT</a>
+      <div style="width:100px;margin-top:20px;margin:0 auto;">
+        <a style="" href="#" class="submit-button" onclick="submitCode();">Submit</a>
+      </div>
     </div>
     <div id="challenge-container" style="width:150px;display:inline-block;vertical-align:top;">
       <div id="challenge-name">
@@ -150,9 +156,9 @@
       <div id="challenge-text">
       </div>
     </div>
-    <div style="position:relative;width:350px;display:inline-block;">
+    <div style="position:relative;width:370px;display:inline-block;">
       <div style="vertical-align:top;margin-left:20px;">
-        <span class="name"  id="their_name"></span>(Them):
+        <span class="name"  id="their_name"></span>(Them)
         <div id="firepad2"></div>
         <div>
           <span class="wins">Wins:</span> <span id="opponent-wins">0</span>
@@ -171,18 +177,19 @@
       </div>
     </div>
   <div id="modals" style="display:none;">
-    <div id="user-name-modal" style="text-align:center;height:200px;width:300px;padding-top:50px;">
+    <div id="user-name-modal" style="text-align:center;height:210px;width:400px;padding-top:10px;">
         <h2>Welcome to StreetCodr!</h2>
-        <label for="name">Enter your name:</label>
-        <input type="text" name="name" id="name">
-        <br>
-        <button type="button">Go</button>
+        <label style="font-size: 26px;" for="name">Enter your name</label><br>
+        <input style="width:200px;height:30px;font-size:20px;" type="text" name="name" id="name">
+        <br><br>
+        <button style="font-size:20px;width:60px;height:30px" type="button">Go</button>
     </div>
-    <div id="new-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+    <div id="new-match-modal" style="text-align:center;height:210;width:400;padding-top:10px;">
         <h2>Welcome, <span id="name"></span></h2>
-        <div>Wins: <span id="wins"></span></div>
-        <div>Losses: <span id="losses"></span></div>
-        <button type="button">Find an opponent</button>
+        <div class="wins">Wins: <span id="wins"></span></div>
+        <div class="wins">Losses: <span id="losses"></span></div>
+        <br>
+        <button style="font-size:20px;width:180px;height:60px" type="button">Find an opponent</button>
     </div>
     <div id="end-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
         <h2><span id="name"></span> wins!</h2>
@@ -306,17 +313,19 @@
       }
 
       function popup(message) {
-        var maskHeight = window.innerHeight;
-        var outerHeight = $(document).height();
-        var maskWidth = $(window).width();
+          var maskHeight = window.innerHeight;
+          var outerHeight = $(document).height();
+          var maskWidth = $(window).width();
 
-        $('#dialog-message').html(message);
+          $('#dialog-message').html(message);
 
-        var dialogTop =  $(window).scrollTop() + (maskHeight/2) - ($('#dialog-box').height()/2);
-        var dialogLeft = (maskWidth/2) - ($('#dialog-box').width()/2);
-         
-        $('#dialog-overlay').css({height:outerHeight, width:maskWidth}).show();
-        $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
+          var dialogTop =  $(window).scrollTop() + (maskHeight/2) - ($('#dialog-box').height()/2);
+          var dialogLeft = (maskWidth/2) - ($('#dialog-box').width()/2);
+           
+          $('#dialog-overlay').css({height:outerHeight, width:maskWidth}).fadeIn('fast');
+          setTimeout( function() {
+              $('#dialog-box').css({top:dialogTop, left:dialogLeft}).fadeIn('fast');
+          }, 100);
       }
       
       function updateScreen(clear) {
@@ -576,7 +585,7 @@
                         session = data.val();
                         session.id = data.name();
                         updateScreen(true);
-                      }) 
+                      });
                     }
                   });
                 });
@@ -648,7 +657,7 @@
       }
 
       function waitForSession() {
-        $("#new-match-modal").html("Waiting...");
+        $("#new-match-modal").html("<span style='padding-top:80px;font-size:30px;'>Waiting...</span>");
         var sessionRef = FB("/session");
         sessionRef.once('child_changed',function(new_session){
           close_popup();
