@@ -138,6 +138,8 @@
       var host = false;
       var userFirepad = null;
       var opponentFirepad = null;
+      var userFirepadReady = false;
+      var opponentFirepadReady = false;
 
       //Challenges data
       var challenges = [
@@ -211,8 +213,12 @@
       }
 
       function clearScreen() {
-        opponentFirepad.setText("");
-        userFirepad.setText("");
+        if(opponentFirepadReady){
+          opponentFirepad.setText("");
+        }
+        if(userFirepadReady){
+          userFirepad.setText("");
+        }
       }
       
       function addWin(winnerId){
@@ -373,11 +379,16 @@
         var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
         userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: true });
+        userFirepad.on('ready', function() {
+                userFirepadReady = true;
+              }
         var firepadRef2 = FB('/users/' + opponentId + "/code");
         var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
         opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
-    
+       opponentFirepad.on('ready', function() {
+                opponentFirepadReady = true;
+              }
         var sessionId = guid();
         var sessionRef = FB('/session/' + sessionId);
     
@@ -482,10 +493,16 @@
               var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
               userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
                   { richTextShortcuts: true, richTextToolbar: true });
+              userFirepad.on('ready', function() {
+                userFirepadReady = true;
+              });
               var firepadRef2 = FB('/users/' + opponentId + "/code");
               var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
               opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
                  { richTextShortcuts: true, richTextToolbar: true });
+              opponentFirepad.on('ready', function() {
+                opponentFirepadReady = true;
+              });
                 var rounds = FB("/session/" + new_session.id + "/round");
                 rounds.on("child_changed",function(round){
                   isSessionOver(function(isOver,winnerId){
