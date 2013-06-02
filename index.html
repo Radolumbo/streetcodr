@@ -370,7 +370,7 @@
       function getCurrentRound(){
         rounds = session.round;
         for(var r in rounds){
-          round = r;
+          var round = r;
         }
         return rounds[round];
       }
@@ -427,6 +427,7 @@
           FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
           FB('/session/' + sessionId).once('value',function(data){
                 session = data.val();
+                session.id = data.name();
                 updateScreen(true);
                 });;
           
@@ -490,9 +491,11 @@
 
       function waitForSession() {
         $("#new-match-modal").html("Waiting...");
-        session = FB("/session");
-        session.once('child_changed',function(new_session){
+        var sessionRef = FB("/session");
+        sessionRef.once('child_changed',function(new_session){
           close_popup();
+          new_session.id = new_session.name();
+          session = {id: new_session.id};
           var users = new_session.val().users;
           for(var i in users){
             if(i!=user.id){
@@ -511,9 +514,8 @@
               opponentFirepad.on('ready', function() {
                 opponentFirepadReady = true;
               });
-              updateScreen(true);
                 var rounds = FB("/session/" + new_session.id + "/round");
-                rounds.on("child_changed",function(round){
+                rounds.on("child_added",function(round){
                   isSessionOver(function(isOver,winnerId){
                     if(isOver){
                       rounds.off();
@@ -522,6 +524,7 @@
                     else{
                       FB("/sesson/" + new_session.id).once("value",function(data){
                         session = data.val();
+                        session.id = data.name();
                         updateScreen(true);
                       }) 
                     }
