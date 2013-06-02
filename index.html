@@ -741,6 +741,9 @@
       
 
       function getOpponent(){
+        if(session){
+          FB("/session/" + session.id).set(null);
+        }
         resetGlobals();
         getUserFromQueue(function(opponentId){
           if(!opponentId) {
