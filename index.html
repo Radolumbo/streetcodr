@@ -544,9 +544,11 @@
         popup($("#end-match-modal").clone());
         if(winnerId == user.id) {
           $("#end-match-modal #name").html(user.name);
+          FB('/users/'+user.id+'/wins').set(++user.wins);
         }
         else {
           $("#end-match-modal #name").html(opponent.name);
+          FB('/users/'+user.id+'/losses').set(++user.losses);
         }
         $("#end-match-modal button").click(function(){
           showMatchModal();
