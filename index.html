@@ -381,14 +381,14 @@
             { richTextShortcuts: true, richTextToolbar: true });
         userFirepad.on('ready', function() {
                 userFirepadReady = true;
-              }
+              });
         var firepadRef2 = FB('/users/' + opponentId + "/code");
         var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
         opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
        opponentFirepad.on('ready', function() {
                 opponentFirepadReady = true;
-              }
+              });
         var sessionId = guid();
         var sessionRef = FB('/session/' + sessionId);
     
