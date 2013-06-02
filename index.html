@@ -341,7 +341,7 @@
         popup($("#user-name-modal").clone());
         $("#user-name-modal button").click(function(){
           var name = $("#name").val();
-          user = newUser(id,name);
+          newUser(id,name,0,0);
           callback();
         });
       }
@@ -487,7 +487,7 @@
               opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
                  { richTextShortcuts: true, richTextToolbar: true });
                 var rounds = FB("/session/" + new_session.id + "/round");
-                rounds.on{"child_changed",function(round){
+                rounds.on("child_changed",function(round){
                   isSessionOver(function(isOver,winnerId){
                     if(isOver){
                       rounds.off();
@@ -500,7 +500,7 @@
                       }) 
                     }
                   });
-                }};
+                });
               });
             }
           }
