@@ -88,8 +88,14 @@
     <div id="firepad1"></div>
     <a href="#">SUBMIT</a>
   </div>
+  <div id="challenge-container" style="display:inline-block;">
+    <div id="challenge-name">
+    </div>
+    <div id="challenge-text">
+    </div>
+  </div>
   <div style="display:inline-block;">
-    Them:
+    <span id="their_name"></span>(Them):
     <div id="firepad2"></div>
     <a href="#">SUBMIT</a>
   </div>
@@ -114,6 +120,10 @@
         <div>Losses:</div>
         <button type="button">Find an opponent</button>
     </div>
+    <div id="end-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+        <h2><span id="name"></span> wins!</h2>
+        <button type="button">Click to play again</button>
+    </div>
   </div>
     <script>
 //******************************GLOBAL VARIABLES*******************************
@@ -125,6 +135,8 @@
       var roundNumber = 1;
       var challenge = null;
       var host = false;
+      var userFirepad = null;
+      var opponentFirepad = null;
 
       //Challenges data
       var challenges = [
@@ -183,18 +195,27 @@
         $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
       }
       
-      function updateScreen(winnerId) {
-        
-        clearScreen();
+      function updateScreen(clear,winnerId) {
+        if(clear){
+          clearScreen();
+        }
         //set challenge text
-        if(winnerId != undefined){
+        if(winnerId){
           addWin(winnerId);
         }
-        
+        $("#your_name").html(user.name);
+        $("#their_name").html(opponent.name);
+        $("#challenge-name").html(getCurrentRound().challengeName);
+        $("#challenge-text").html(challenges[challengeNameToIndex(getCurrentRound().challengeName)].text);
       }
 
       function clearScreen() {
+<<<<<<< HEAD
 
+=======
+        opponentFirepad.setText("");
+        userFirepad.setText("");
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
       }
       
       function addWin(winnerId){
@@ -243,6 +264,27 @@
         });
       }
       
+      function isSessionOver(callback){
+        getWins(user.id, function(wins){
+          if(wins >= winLimit){
+            //we're done
+            callback(true,user.id);
+          }
+          else{
+            getWins(opponent.id, function(wins){
+              if(wins>=winLimit){
+                //we;re done
+                callback(true,opponent.id);
+              }
+              else{
+                //shit ain't over
+                callback(false,opponent.id);
+              }
+            });
+          }
+        });
+      }
+
       //Set opponent by id
       function setOpponent(id, callback){
         FB('/users/' + id).once('value', function(data) {
@@ -274,8 +316,16 @@
 
       }
 
+<<<<<<< HEAD
       function getUserFromQueue() {
 
+=======
+      function getUserFromQueue(callback) {
+        FB("/queue").once('value', function(data){
+          FB("/queue").set(null);
+          callback(data.val());
+        });
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
       }
 
  //***************************MODALS********************************
@@ -296,15 +346,36 @@
         });
       }
 
+      function showEndMatchModal(winnerId){
+        popup($("#end-match-modal").clone());
+        if(winnerId == user.id) {
+          $("#end-match-modal #name").html(user.name);
+        }
+        else {
+          $("#end-match-modal #name").html(opponent.name);
+        }
+        $("#end-match-modal button").click(function(){
+          showMatchModal();
+        });
+      }
+
 //***************************GAME ENGINE********************************
+      function getCurrentRound(){
+        rounds = session.round;
+        for(var r in rounds){
+          round = r;
+        }
+        return round;
+      }
+
       function createSession(opponentId){
         var firepadRef1 = FB('/users/' + user.id + '/code');
         var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
-        var firepad1 = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
+        userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: true });
         var firepadRef2 = FB('/users/' + opponentId + "/code");
         var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
-        var firepad2 = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
+        opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: true });
     
         var sessionId = guid();
@@ -355,12 +426,10 @@
           
           getWins(sessionId, winnerId,function(wins){
             if( wins >= winLimit){
-            
               //session over!
-            
+              showEndMatchModal(winnerId);
             }
             else{ //Not the last round yet
-            
               challenge = getChallenge();
               usedChallenges.push(challenge.name);
               FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
@@ -411,9 +480,54 @@
       }
 
       function waitForSession() {
-
+        session = FB("/session");
+        session.once('child_changed',function(new_session){
+          var users = new_session.val().users;
+          for(var i in users){
+            if(i!=user.id){
+              setOpponent(i,function(){
+              var firepadRef1 = FB('/users/' + user.id + '/code');
+              var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
+              userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
+                  { richTextShortcuts: true, richTextToolbar: true });
+              var firepadRef2 = FB('/users/' + opponentId + "/code");
+              var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
+              opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
+                 { richTextShortcuts: true, richTextToolbar: true });
+                var rounds = FB("/session/" + new_session.id + "/round");
+                rounds.on{"child_changed",function(round){
+                  isSessionOver(function(isOver,winnerId){
+                    if(isOver){
+                      rounds.off();
+                      showEndMatchModal(winnerId);
+                    }
+                    else{
+                      FB("/sesson/" + new_session.id).once("value",function(data){
+                        session = data.val();
+                        updateScreen(true);
+                      }) 
+                    }
+                  });
+                }};
+              });
+            }
+          }
+        });
       }
 
+<<<<<<< HEAD
+=======
+      function evaluate(code){
+        for(var i in challenge.testcases){
+          eval("var __evaluator = " + code);
+          if(__evaluator(challenge.testcases[i].input) != challenge.testcases[i].output) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
 //******************************INITIALIZATION***********************************
       $(function(){
         getCurrentUser(function(user){
