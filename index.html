@@ -616,6 +616,9 @@
               
               powrRefOpponent.child('powrUsed').set(null);
             }
+            else{
+              updateScreen();
+            }
           
           });
           
@@ -761,6 +764,9 @@
                   usePowrOnSelf();
                   
                   powrRefOpponent.child('powrUsed').set(null);
+                }
+                else{
+                  updateScreen();
                 }
               
               });
