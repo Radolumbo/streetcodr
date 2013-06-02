@@ -673,7 +673,12 @@
 
 //***************************GAME ENGINE********************************
      function submitCode(){
-       var code = userFirepad.getText();
+      try{
+        var code = userFirepad.getText();
+      }
+      catch(err){
+        alert(err);
+      }
        if(evaluate(code)){
          nextRound(session.id,getCurrentRound().id,user.id);
        }
