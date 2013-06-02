@@ -155,7 +155,7 @@
   </div>
   <br>
   <div style="width:1010px;margin:0 auto;">
-    <div style="margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
+    <div style="position:relative;margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
       <div onclick="usePowr('Freeze');" class="icon ice">
         <img style="height:30px;width:30px;" src="ice.png"/>
       </div>
@@ -164,6 +164,8 @@
       </div>
       <div onclick="usePowr('Shrink Ray');" style="margin-top:20px;" class="icon shrink">
         <img style="height:30px;width:30px;" src="shrinkray.png"/>
+      </div>
+      <div id="canttouchthis" style="position:absolute;top:0;left:0;height:130px;z-index:9999;width:100%;display:none;">
       </div>
     </div>
     <div style="position:relative;width:370px;display:inline-block;">
@@ -347,7 +349,7 @@
           ]
         },
         {"name": "X-Clusters",
-        "text": "Input: A string. Output: The number of clusters (any size) of the letter 'x'. Hint: So \"xxyxabcxxxhellox\" would return 4. ",
+        "text": "Input: A string.\nOutput: The number of clusters (any size) of the letter 'x'. \nHint: So \"xxyxabxxxhellox\" would return 4. ",
         "header": "function(string){\n\n}",
         "testcases":
           [
@@ -842,11 +844,16 @@
       }
       
       function usePowr(name){
-        
+        //TODO
+         $("#canttouchthis").show();
+          $("#canttouchthis").css({"background-color":"#CCC","opacity":".9"});
+          $("#canttouchthis").animate({
+              opacity: 0
+            }, 20000, function() {
+              $("#canttouchthis").hide();
+            });
         powrs[name](false);
-        
         powrRefUser.child('powrUsed').set(name);
-        
       }
       
       //Turn the name of a challenge into its index
