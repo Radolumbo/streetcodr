@@ -294,6 +294,7 @@
       function setOpponent(id, callback){
         FB('/users/' + id).once('value', function(data) {
           opponent = data.val();
+          opponent.id = id;
           callback();
         });
       }
