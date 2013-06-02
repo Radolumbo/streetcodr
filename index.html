@@ -20,14 +20,24 @@
     }
 
     h2{
-      color:#E55;
+      color:#117799;
       font-family: "Lucida Console", Monaco, monospace;
       font-size: 24px;
     }
 
-    .wins{
+     h3{
       color:#E55;
       font-family: "Lucida Console", Monaco, monospace;
+      font-size: 16px;
+    }
+
+    .wins{
+      color:#117799;
+      font-family: "Lucida Console", Monaco, monospace;
+    }
+
+    .icon:hover{
+      cursor: pointer;
     }
 
     #firepad1{
@@ -141,36 +151,58 @@
 </head>
 <body>
   <div>
-    <h1 style="margin-left:20px;">streetcodr</h1>
+    <h1 style="margin-left:20px;font-family:monospace;font-size:40px;font-weight:normal;">streetcodr</span></h1>
   </div>
-  <hr>
   <br>
-  <div style="width:900px;margin:0 auto;">
-    <div style="vertical-align:top;display:inline-block;margin-right:20px;">
-      <span class="name" id="your_name"></span> &nbsp;&nbsp;&nbsp;<span style="font-size:24px;color:#CC2;">(You)</span>
-      <div id="firepad1"></div>
-      <div>
-        <span class="wins">Wins:</span> <span id="user-wins">0</span>
+  <div style="width:1000px;margin:0 auto;">
+    <div style="margin-right:10px;margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
+      <div onclick="usePowr('Freeze');" class="icon ice">
+        <img style="height:30px;width:30px;" src="ice.png"/>
       </div>
-      <div style="width:100px;margin-top:20px;margin:0 auto;">
-        <a style="color:black;" class="submit-button" onclick="submitCode();">Submit</a>
+      <div onclick="usePowr('Magnifier');" style="margin-top:20px;" class="icon magnify">
+        <img style="height:30px;width:30px;" src="magnify.png"/>
       </div>
     </div>
-    <div id="challenge-container" style="width:150px;display:inline-block;vertical-align:top;">
+    <div style="position:relative;width:370px;display:inline-block;">
+      <div style="vertical-align:top;margin-left:20px;">
+        <span class="name" id="your_name"></span> &nbsp;&nbsp;&nbsp;<span style="font-size:24px;color:#CC2;">(You)</span>
+        <div id="firepad1"></div>
+        <div>
+          <span style="color:#E55;" class="wins">Wins:</span> <span id="user-wins">0</span>
+        </div>
+        <div style="width:100px;margin-top:20px;margin:0 auto;">
+          <a style="color:black;" class="submit-button" onclick="submitCode();">Submit</a>
+        </div>
+      </div>
+      <div id="user-cover" style="display:none;position:absolute;top:0;left:0;height:100%;width:100%;">
+      </div>
+    </div>
+    <div id="challenge-container" style="margin-left:30px;width:150px;display:inline-block;vertical-align:top;">
+      <div style='font-family: "Lucida Console", Monaco, monospace;font-size: 15px;color: #67C8FF'>
+        Javascript
+      </div>
       <div id="challenge-name">
       </div>
       <div id="challenge-text">
       </div>
     </div>
-    <div style="position:relative;width:370px;display:inline-block;">
+    <div style="vertical-align:top;position:relative;width:370px;display:inline-block;">
       <div style="vertical-align:top;margin-left:20px;">
         <span class="name"  id="their_name"></span>&nbsp;&nbsp;&nbsp;<span style="font-size:24px;">(Them)</span>
         <div id="firepad2"></div>
         <div>
-          <span class="wins">Wins:</span> <span id="opponent-wins">0</span>
+          <span style="color:#E55;" class="wins">Wins:</span> <span id="opponent-wins">0</span>
         </div>
       </div>
-      <div style="position:absolute;top:0;left:0;height:100%;width:100%;">
+      <div id="opponent-cover" style="position:absolute;top:0;left:0;height:100%;width:100%;">
+      </div>
+    </div>
+    <div style="margin-left:10px;margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
+      <div class="ice">
+        <img style="height:30px;width:30px;" src="ice.png"/>
+      </div>
+      <div style="margin-top:20px;" class="magnify">
+        <img style="height:30px;width:30px;" src="magnify.png"/>
       </div>
     </div>
   </div>
@@ -184,16 +216,17 @@
     </div>
   <div id="modals" style="display:none;">
     <div id="user-name-modal" style="text-align:center;height:210px;width:400px;">
-        <h2>Welcome to StreetCodr!</h2>
+        <h2 style="color:#E55;">Welcome to StreetCodr!</h2>
         <label style="font-size: 26px;" for="name">Enter your name</label><br>
         <input style="width:200px;height:30px;font-size:20px;" type="text" name="name" id="name">
         <br><br>
         <button style="font-size:20px;width:60px;height:30px" type="button">Go</button>
     </div>
-    <div id="new-match-modal" style="text-align:center;height:210;width:400;">
+    <div id="new-match-modal" style="text-align:center;height:320px;width:400px;">
         <h2>Welcome, <span id="name"></span></h2>
         <div class="wins">Wins: <span id="wins"></span></div>
         <div class="wins">Losses: <span id="losses"></span></div>
+        <h3 style="padding-left:10px;padding-right:10px;">Rules: Javascript. Best of 5 rounds to a match. Click icons to the left of your editor to use powrs.</h3>
         <br>
         <button style="font-size:20px;width:180px;height:60px" type="button">Find an opponent</button>
     </div>
@@ -220,8 +253,8 @@
       var opponentWins = 0;
       var codeMirror1 = null;
       var codeMirror2 = null;
-      var powrRefUser = "";
-      var powrRefOpponent = "";
+      var powrRefUser = null;
+      var powrRefOpponent = null;
 
 
       function resetGlobals(){
@@ -240,8 +273,8 @@
          opponentWins = 0;
          codeMirror1 = null;
          codeMirror2 = null;
-         powrRefUser = "";
-         powrRefOpponent = "";
+         powrRefUser = null;
+         powrRefOpponent = null;
       }
 
       //Challenges data
@@ -321,13 +354,39 @@
       //Powr hash
       var powrs = {
         "Freeze" : function(isVictim){
-          
+          $("#user-cover").clearQueue();
+          $("#opponent-cover").clearQueue();
+          if(isVictim){
+            $("#user-cover").css({"background-color":"#68E","opacity":".4"});
+            $("#user-cover").animate({
+                opacity: 0
+              }, 5000, function() {
+                // Animation complete.
+              });
+            $("#user-cover").show();
+            setTimeout(function(){
+              $("#user-cover").css({"background-color":""});
+              $("#user-cover").hide();
+            },5000);
+          }
+          else{
+           $("#opponent-cover").css({"background-color":"#68E","opacity":".4"})
+           $("#opponent-cover").animate({
+                opacity: 0
+              }, 5000, function() {
+                // Animation complete.
+              });
+           setTimeout(function(){
+              $("#opponent-cover").css({"background-color":""});
+            },5000);
+          }
         },
         "Shrink Ray" : function(isVictim){
           //opponentFirepad ???
+          alert("SHRINK: " + isVictim.toString());
         },
         "Magnifier" : function(isVictim){
-          
+          alert("Magnifier: " + isVictim.toString());
         }
       }
 
@@ -619,7 +678,7 @@
             
             oppPowrs = data.val();
             
-            updateScreen();
+            //updateScreen();
             
             if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
               
@@ -772,7 +831,7 @@
       }
 
       function waitForSession() {
-        $("#new-match-modal").html("<div style='padding-top:80px;font-size:30px;'>Waiting...</div>");
+        $("#new-match-modal").html("<div style='padding-top:120px;font-size:30px;'>Waiting...</div>");
         var sessionRef = FB("/session");
         sessionRef.once('child_changed',function(new_session){
           close_popup();
@@ -785,9 +844,9 @@
                 powrRefUser = FB('/session/' + new_session.id + '/users/' + user.id + '/powrs');
                 powrRefOpponent = FB('/session/' + new_session.id + '/users/' + opponent.id + '/powrs');
                 powrRefOpponent.on('child_changed',function(data){
-              
+                  alert('col');
                   oppPowrs = data.val();
-                  updateScreen();
+                  //updateScreen();
                   if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
                     
                     usePowrOnSelf();
