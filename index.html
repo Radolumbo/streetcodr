@@ -146,6 +146,8 @@
       var opponentFirepad = null;
       var userFirepadReady = false;
       var opponentFirepadReady = false;
+      var userWins = 0;
+      var opponentWins = 0;
 
       //Challenges data
       var challenges = [
@@ -216,6 +218,8 @@
         $("#their_name").html(opponent.name);
         $("#challenge-name").html(getCurrentRound().challengeName);
         $("#challenge-text").html(challenges[challengeNameToIndex(getCurrentRound().challengeName)].text);
+        $("#user-wins").html(userWins);
+        $("#opponent-wins").html(opponentWins);
       }
 
       function clearScreen() {
@@ -228,8 +232,12 @@
       }
       
       function addWin(winnerId){
-        //use winnerId to determine if you won or your opponent won
-        //add a little dot to show the win or whatever
+        if(winnerId==user.id){
+          userWins += 1;
+        }
+        else{
+          opponentWins += 1;
+        }
       }
 
 //*****************************UTILITY FUNCTIONS*******************************
