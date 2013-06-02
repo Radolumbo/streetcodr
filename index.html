@@ -673,16 +673,20 @@
 
 //***************************GAME ENGINE********************************
      function submitCode(){
-      try{
         var code = userFirepad.getText();
-      }
-      catch(err){
-        alert(err);
-      }
-       if(evaluate(code)){
+        var right = false;
+        var error = false;
+        try{
+          right = evaluate(code);
+        }
+        catch (err){
+          alert(err);
+          error = true;
+        }
+       if(right){
          nextRound(session.id,getCurrentRound().id,user.id);
        }
-       else{
+       else if(!error){
         alert("you are wrong and should be punished");
        }
      }
@@ -982,7 +986,10 @@
       }
 
       function evaluate(code){
-        if(eval("typeof("+code+")")!="function"){
+        var type = "";
+          type = eval("typeof("+code+")");
+
+        if(type!="function"){
           return false;
         }
         for(var i in challenge.testcases){
