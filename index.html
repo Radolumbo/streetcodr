@@ -265,12 +265,18 @@
         if(clear){
           clearScreen();
         }
-        $("#your_name").html(user.name);
-        $("#their_name").html(opponent.name);
-        $("#challenge-name").html(getCurrentRound().challengeName);
-        $("#challenge-text").html(challenges[challengeNameToIndex(getCurrentRound().challengeName)].text);
-        $("#user-wins").html(userWins);
-        $("#opponent-wins").html(opponentWins);
+        
+        userWins = getWins(session.id, user.id, function(wins){
+          opponentWins=getWins(session.id, opponent.id, function(wins){
+            
+            $("#your_name").html(user.name);
+            $("#their_name").html(opponent.name);
+            $("#challenge-name").html(getCurrentRound().challengeName);
+            $("#challenge-text").html(challenges[challengeNameToIndex(getCurrentRound().challengeName)].text);
+            $("#user-wins").html(userWins);
+            $("#opponent-wins").html(opponentWins);
+          });
+        });
       }
 
       function clearScreen() {
@@ -281,15 +287,7 @@
           userFirepad.setText("");
         }
       }
-      
-      function addWin(winnerId){
-        if(winnerId==user.id){
-          userWins += 1;
-        }
-        else{
-          opponentWins += 1;
-        }
-      }
+
 
 //*****************************UTILITY FUNCTIONS*******************************
         function s4() {
@@ -507,7 +505,6 @@
           
         }
         else{
-          addWin(winnerId);
           FB('/session/' + session.id + '/round/' + (roundNumber - 1) + '/winner').set(winnerId);
           getWins(sessionId, winnerId,function(wins){
             if( wins >= winLimit){
