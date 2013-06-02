@@ -562,11 +562,11 @@
           powrRefUser.child('Freeze').set(0);
           powrRefUser.child('Shrink Ray').set(0);
           powrRefUser.child('Magnifier').set(0);
-          powerRefUser.child('powrUsed').set(null);
+          powrrRefUser.child('powrUsed').set(null);
           powrRefOpponent.child('Freeze').set(0);
           powrRefOpponent.child('Shrink Ray').set(0);
           powrRefOpponent.child('Magnifier').set(0);
-          powerRefOpponent.child('powrUsed').set(null);
+          powrRefOpponent.child('powrUsed').set(null);
           
           powerRefOpponent.on('child_changed',function(data){
             
@@ -709,8 +709,8 @@
           for(var i in users){
             if(i!=user.id){
               setOpponent(i,function(){
-              powrRefUser = userRef.child('powrs');
-              powrRefOpponent = oppRef.child('powrs')
+              powrRefUser = FB('/session/' + new_session.id + '/users/' + user.id + '/powrs');
+              powrRefOpponent = FB('/session/' + new_session.id + '/users/' + opponent.id + '/powrs');
               powerRefOpponent.on('child_changed',function(data){
             
                 oppPowrs = data.val();
