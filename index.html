@@ -205,7 +205,11 @@
       var opponentFirepadReady = false;
       var userWins = 0;
       var opponentWins = 0;
-
+      var codeMirror1 = null;
+      var codeMirror2 = null;
+      var powrRefUser = "";
+      var powrRefOpponent = "";
+      
       //Challenges data
       var challenges = [
         {"name": "String Reverse",
@@ -283,10 +287,13 @@
       //Powr hash
       var powrs = {
         "Freeze" : function(){
-
+          
         },
-        "BigFont" : function(){
-
+        "Shrink Ray" : function(){
+          //opponentFirepad ???
+        },
+        "Magnifier" : function(){
+          
         }
       }
 
@@ -514,14 +521,14 @@
 
       function createSession(opponentId){
         var firepadRef1 = FB('/users/' + user.id + '/code');
-        var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
+        codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
         userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: false });
         userFirepad.on('ready', function() {
                 userFirepadReady = true;
               });
         var firepadRef2 = FB('/users/' + opponentId + "/code");
-        var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
+        codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
         opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: false });
        opponentFirepad.on('ready', function() {
@@ -538,8 +545,18 @@
         
         setOpponent(opponentId,function(){
           //Initialize their power ups to empty
-          userRef.child('powrups').set([""]);
-          oppRef.child('powrups').set([""]);
+          
+          powrRefUser = userRef.child('powrs');
+          powrRefOpponent = oppRef.child('powrs');
+          
+          powrRefUser.child('Freeze').set(0);
+          powrRefUser.child('Shrink Ray').set(0);
+          powrRefUser.child('Magnifier').set(0);
+          powrRefOpponent.child('Freeze').set(0);
+          powrRefOpponent.child('Shrink Ray').set(0);
+          powrRefOpponent.child('Magnifier').set(0);
+          
+          
           
           //Clear variables;
           usedChallenges = [];
@@ -576,7 +593,7 @@
                         session = data.val();
                         session.id = data.name();
                         updateScreen(true);
-                      }) 
+                      }); 
                     }
                   });
                 });
@@ -605,6 +622,12 @@
             }   
           });
         }
+        
+      }
+      
+      function usePowr(name){
+        
+        
         
       }
       
@@ -659,14 +682,14 @@
             if(i!=user.id){
               setOpponent(i,function(){
               var firepadRef1 = FB('/users/' + user.id + '/code');
-              var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
+              codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
               userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
                   { richTextShortcuts: true, richTextToolbar: false });
               userFirepad.on('ready', function() {
                 userFirepadReady = true;
               });
               var firepadRef2 = FB('/users/' + opponent.id + "/code");
-              var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
+              codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
               opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
                  { richTextShortcuts: true, richTextToolbar: false });
               opponentFirepad.on('ready', function() {
