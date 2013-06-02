@@ -86,10 +86,10 @@
   <div style="display:inline-block;margin-right:20px;">
     <span id="your_name"></span> (You):
     <div id="firepad1"></div>
-    <a href="#">SUBMIT</a>
     <div>
-      Your wins: <span id="#user-wins">0</span>
+      Your wins: <span id="user-wins">0</span>
     </div>
+    <a href="#" onclick="submitCode();">SUBMIT</a>
   </div>
   <div id="challenge-container" style="display:inline-block;vertical-align:top;">
     <div id="challenge-name">
@@ -100,9 +100,8 @@
   <div style="display:inline-block;">
     <span id="their_name"></span>(Them):
     <div id="firepad2"></div>
-    <a href="#" onclick="submitCode();">SUBMIT</a>
     <div>
-      Their wins: <span id="#opponent-wins">0</span>
+      Their wins: <span id="opponent-wins">0</span>
     </div>
   </div>
   <div id="dialog-overlay">
@@ -164,6 +163,62 @@
               "output": "dlrow  olleh"
             }
           ]
+        },
+        {"name": "String Reverse2",
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        "testcases":
+          [
+            {
+              "input": "abcdefg",
+              "output": "gfedcba"
+            },
+            {
+              "input": "hello  world",
+              "output": "dlrow  olleh"
+            }
+          ]
+        },
+        {"name": "String Reverse3",
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        "testcases":
+          [
+            {
+              "input": "abcdefg",
+              "output": "gfedcba"
+            },
+            {
+              "input": "hello  world",
+              "output": "dlrow  olleh"
+            }
+          ]
+        } ,
+        {"name": "String Reverse4",
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        "testcases":
+          [
+            {
+              "input": "abcdefg",
+              "output": "gfedcba"
+            },
+            {
+              "input": "hello  world",
+              "output": "dlrow  olleh"
+            }
+          ]
+        },
+        {"name": "String Reverse5",
+        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        "testcases":
+          [
+            {
+              "input": "abcdefg",
+              "output": "gfedcba"
+            },
+            {
+              "input": "hello  world",
+              "output": "dlrow  olleh"
+            }
+          ]
         } 
       ]
 
@@ -206,13 +261,9 @@
         $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
       }
       
-      function updateScreen(clear,winnerId) {
+      function updateScreen(clear) {
         if(clear){
           clearScreen();
-        }
-        //set challenge text
-        if(winnerId){
-          addWin(winnerId);
         }
         $("#your_name").html(user.name);
         $("#their_name").html(opponent.name);
@@ -274,10 +325,10 @@
             var round = data.val().round[i.toString()];
             if(round != undefined){
               var roundWinner = round.winner;
-            }
-            if(userId == roundWinner){
-              wins++;
-            }  
+              if(userId == roundWinner){
+                wins++;
+              }  
+            }            
           }  
           callback(wins);
         });
@@ -432,7 +483,7 @@
           
           //Clear variables;
           usedChallenges = [];
-          roundNumber = 1; 
+          roundNumber = 0; 
           challenge = null;
                       
           setTimeout(function(){nextRound(sessionId, roundNumber)},100);
@@ -443,14 +494,11 @@
       //If winnerId is null, it's the first round! Yay!
       //Also handles the end of the game (if wins for winner > winLimit)
       function nextRound(sessionId, roundNumber, winnerId){
-        
         roundNumber++;
-        
-        if(roundNumber == 2){ //It's the first round
-          
+        if(roundNumber == 1){ //It's the first round
           challenge = getChallenge();
           usedChallenges.push(challenge.name);
-          FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
+          FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
           FB('/session/' + sessionId).once('value',function(data){
                 session = data.val();
                 session.id = data.name();
@@ -459,7 +507,8 @@
           
         }
         else{
-        
+          addWin(winnerId);
+          FB('/session/' + session.id + '/round/' + (roundNumber - 1) + '/winner').set(winnerId);
           getWins(sessionId, winnerId,function(wins){
             if( wins >= winLimit){
               //session over!
@@ -468,9 +517,10 @@
             else{ //Not the last round yet
               challenge = getChallenge();
               usedChallenges.push(challenge.name);
-              FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
+              FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
               FB('/session/' + sessionId).once('value',function(data){
                 session = data.val();
+                session.id = data.name();
                 updateScreen(true,winnerId);
                 });
             }   
@@ -563,6 +613,9 @@
       }
 
       function evaluate(code){
+        if(eval("typeof("+code+")")!="function"){
+          return false;
+        }
         for(var i in challenge.testcases){
           eval("var __evaluator = " + code);
           if(__evaluator(challenge.testcases[i].input) != challenge.testcases[i].output) {
