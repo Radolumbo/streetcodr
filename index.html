@@ -392,16 +392,16 @@
         var sessionId = guid();
         var sessionRef = FB('/session/' + sessionId);
     
-        var userRef = sessionRef.child(user.id);
-        var oppRef = sessionRef.child(opponentId);
+        var userRef = sessionRef.child('/users/'+user.id);
+        var oppRef = sessionRef.child('/users/'+opponentId);
         
         var host = true;
         close_popup();
         
         setOpponent(opponentId,function(){
           //Initialize their power ups to empty
-          userRef.child('powrups').set([]);
-          oppRef.child('powrups').set([]);
+          userRef.child('powrups').set([""]);
+          oppRef.child('powrups').set([""]);
           
           //Clear variables;
           usedChallenges = [];
