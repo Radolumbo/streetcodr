@@ -561,7 +561,7 @@
         close_popup();
         
         setOpponent(opponentId,function(){
-          //Initialize their power ups to empty
+          //Initialize their powr  to empty
           
           powrRefUser = userRef.child('powrs');
           powrRefOpponent = oppRef.child('powrs');
@@ -575,15 +575,15 @@
           powrRefOpponent.child('Magnifier').set(0);
           powrRefOpponent.child('powrUsed').set(null);
           
-          powerRefOpponent.on('child_changed',function(data){
+          powrRefOpponent.on('child_changed',function(data){
             
             oppPowrs = data.val();
             
-            if(oppPowrs.powrUsed != null){ //Opponent just used a power!!11!1one
+            if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
               
               usePowrOnSelf();
               
-              powerRefOpponent.child('powrUsed').set(null);
+              powrRefOpponent.child('powrUsed').set(null);
             }
           
           });
@@ -722,11 +722,11 @@
             
                 oppPowrs = data.val();
                 
-                if(oppPowrs.powrUsed != null){ //Opponent just used a power!!11!1one
+                if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
                   
                   usePowrOnSelf();
                   
-                  powerRefOpponent.child('powrUsed').set(null);
+                  powrRefOpponent.child('powrUsed').set(null);
                 }
               
               });
