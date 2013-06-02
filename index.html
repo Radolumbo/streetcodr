@@ -399,6 +399,8 @@
 
  //***************************MODALS********************************
       function showMatchModal(){
+        $("#firepad1").html("");
+        $("#firepad2").html("");
         popup($("#new-match-modal").clone());
         $("#new-match-modal #name").html(user.name);
         $("#new-match-modal #wins").html(user.wins);
