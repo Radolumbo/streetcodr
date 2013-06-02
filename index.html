@@ -503,8 +503,26 @@
                 session = data.val();
                 session.id = data.name();
                 updateScreen(true);
-                });;
-          
+                });
+
+          //HOLEE SHEET PROB BETTER DELTET THIS****************************************/
+          var rounds = FB("/session/" + new_session.id + "/round");
+                rounds.on("child_added",function(round){
+                  isSessionOver(function(isOver,winnerId){
+                    if(isOver){
+                      rounds.off();
+                      showEndMatchModal(winnerId);
+                    }
+                    else{
+                      FB("/session/" + new_session.id).once("value",function(data){
+                        session = data.val();
+                        session.id = data.name();
+                        updateScreen(true);
+                      }) 
+                    }
+                  });
+                });
+          //*************************************************************//
         }
         else{
           FB('/session/' + session.id + '/round/' + (roundNumber - 1) + '/winner').set(winnerId);
