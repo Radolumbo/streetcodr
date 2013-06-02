@@ -116,9 +116,8 @@
         <button type="button">Go</button>
     </div>
     <div id="new-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
-        <h2>Welcome, <span id="name"></span></h2>
-        <div>Wins: <span id="wins"></span></div>
-        <div>Losses: <span id="losses"></span></div>
+        <div>Wins:</div>
+        <div>Losses:</div>
         <button type="button">Find an opponent</button>
     </div>
     <div id="end-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
@@ -211,8 +210,12 @@
       }
 
       function clearScreen() {
+<<<<<<< HEAD
+
+=======
         opponentFirepad.setText("");
         userFirepad.setText("");
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
       }
       
       function addWin(winnerId){
@@ -233,12 +236,10 @@
       }
 
 //*****************************CLASSES*************************************
-      function User(id,name,wins,losses){
+      function User(id,name){
         var self = this;
         self.id = id;
         self.name = name;
-        self.wins = wins;
-        self.losses = losses;
       }
 
 //*****************************FIREBASE FUNCTIONS*******************************
@@ -295,8 +296,8 @@
       function getCurrentUser(callback){
         if($.cookie("userId")!=null) {
           var id = $.cookie("userId");
-          FB("/users/" + id).once('value', function(data) {
-            user = new User(id,data.val().name,data.val().wins,data.val().losses);
+          FB("/users/" + id + "/name").once('value', function(data) {
+            user = new User(id,data.val());
             callback(user);
           });          
         }
@@ -306,31 +307,30 @@
       }
 
       function newUser(id,name){
-        user = new User(id,name,0,0);
+        user = new User(id,name);
         $.cookie("userId",id);
         FB("/users/" + id + "/name").set(name);
-        FB("/users/" + id + "/wins").set(0);
-        FB("/users/" + id + "/losses").set(0);
       }
 
-      function addUserToQueue(callback) {
-        FB("/queue").set(user.id);
-        callback();
+      function addUserToQueue() {
+
       }
 
+<<<<<<< HEAD
+      function getUserFromQueue() {
+
+=======
       function getUserFromQueue(callback) {
         FB("/queue").once('value', function(data){
           FB("/queue").set(null);
           callback(data.val());
         });
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
       }
 
  //***************************MODALS********************************
       function showMatchModal(){
         popup($("#new-match-modal").clone());
-        $("#new-match-modal #name").html(user.name);
-        $("#new-match-modal #wins").html(user.wins);
-        $("#new-match-modal #losses").html(user.losses);
         $("#new-match-modal button").click(function(){
           getOpponent();
         });
@@ -380,7 +380,7 @@
     
         var sessionId = guid();
         var sessionRef = FB('/session/' + sessionId);
-    
+        
         var userRef = sessionRef.child(user.id);
         var oppRef = sessionRef.child(opponentId);
         
@@ -414,11 +414,16 @@
           challenge = getChallenge();
           usedChallenges.push(challenge.name);
           FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
-          updateScreen(true);
+          FB('/session/' + sessionId).once('value',function(data){
+                session = data.val();
+                updateScreen();
+                });
           
         }
         else{
-        
+          
+          FB('/session/' + sessionId + '/round/' + (roundNumber - 2) + '/winner').set(winnerId);
+          
           getWins(sessionId, winnerId,function(wins){
             if( wins >= winLimit){
               //session over!
@@ -428,7 +433,10 @@
               challenge = getChallenge();
               usedChallenges.push(challenge.name);
               FB('/session/' + sessionId + '/round/' + (roundNumber - 1) + '/challengeName').set(challenge.name);
-              updateScreen(true,winnerId);
+              FB('/session/' + sessionId).once('value',function(data){
+                session = data.val();
+                updateScreen();
+                });
             }   
           });
         }
@@ -461,14 +469,14 @@
       
 
       function getOpponent(){
-        getUserFromQueue(function(opponentId){
-          if(!opponentId) {
-            addUserToQueue(waitForSession);
-          }
-          else {
-            createSession(opponentId);
-          }
-        });  
+        opponent = getUserFromQueue();
+        if(!opponent) {
+          addUserToQueue();
+          waitForSession();
+        }
+        else {
+          createSession(opponent.id);
+        }
       }
 
       function waitForSession() {
@@ -507,6 +515,8 @@
         });
       }
 
+<<<<<<< HEAD
+=======
       function evaluate(code){
         for(var i in challenge.testcases){
           eval("var __evaluator = " + code);
@@ -517,6 +527,7 @@
         return true;
       }
 
+>>>>>>> 08a3e4b38ac73d49a50d8a56a1ed700bfb29b48a
 //******************************INITIALIZATION***********************************
       $(function(){
         getCurrentUser(function(user){
