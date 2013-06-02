@@ -398,9 +398,7 @@
         var host = true;
         
         setOpponent(opponentId,function(){
-          //Initialize their wins to 0 and their power ups to empty
-          userRef.child('wins').set(0);
-          oppRef.child('wins').set(0);
+          //Initialize their power ups to empty
           userRef.child('powrups').set([]);
           oppRef.child('powrups').set([]);
           
