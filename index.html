@@ -266,9 +266,10 @@
           clearScreen();
         }
         
-        userWins = getWins(session.id, user.id, function(wins){
-          opponentWins=getWins(session.id, opponent.id, function(wins){
-            
+        getWins(session.id, user.id, function(wins){
+          userWins = wins;
+          getWins(session.id, opponent.id, function(wins){
+            opponentWins = wins;
             $("#your_name").html(user.name);
             $("#their_name").html(opponent.name);
             $("#challenge-name").html(getCurrentRound().challengeName);
