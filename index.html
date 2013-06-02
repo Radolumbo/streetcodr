@@ -806,11 +806,13 @@
                       showEndMatchModal(winnerId);
                     }
                     else{
-                      FB("/session/" + new_session.id).once("value",function(data){
-                        session = data.val();
-                        session.id = data.name();
-                        updateScreen(true);
-                      }) 
+                      transition(function(){
+                        FB("/session/" + new_session.id).once("value",function(data){
+                          session = data.val();
+                          session.id = data.name();
+                          updateScreen(true);
+                        });
+                      },3,(winnerId == user.id ? user.name : opponent.name) + " won! Next round in...");
                     }
                   });
                 });
