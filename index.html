@@ -247,7 +247,8 @@
       //Challenges data
       var challenges = [
         {"name": "String Reverse",
-        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        "text": "Input: A string.\nReturn: The reverse of the string.\nHint: None.",
+        "header": "function(string){\n\n}",
         "testcases":
           [
             {
@@ -260,59 +261,87 @@
             }
           ]
         },
-        {"name": "String Reverse2",
-        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        {"name": "Missing No.",
+        "text": "Input: An randomized array of integers up to some N. There is one integer missing.\nReturn: The missing integer.\nHint: N = (array.length + 1)",
+        "header": "function(array){\n\n}",
         "testcases":
-          [
+         [
             {
-              "input": "abcdefg",
-              "output": "gfedcba"
+              "input": [6,9,3,4,5,1,2,10,8],
+              "output": 7
             },
             {
-              "input": "hello  world",
-              "output": "dlrow  olleh"
+              "input": [1,2,3,4,5,6,7,8,9,10,15,14,13,12,16],
+              "output": 11
             }
           ]
         },
-        {"name": "String Reverse3",
-        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        {"name": "High Prime",
+        "text": "Input: An integer N.\nReturn: The largest prime less than or equal to the input.\nHint: None",
+        "header": "function(n){\n\n}",
         "testcases":
           [
             {
-              "input": "abcdefg",
-              "output": "gfedcba"
+              "input":  1000,
+              "output": 997
             },
             {
-              "input": "hello  world",
-              "output": "dlrow  olleh"
+              "input": 3,
+              "output": 3
+            },
+            {
+              "input": 56345,
+              "output": 56333
             }
           ]
         } ,
-        {"name": "String Reverse4",
-        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        {"name": "Linear Combo",
+        "text": "Input: An object ints with fields ints.x, ints.y, and ints.z.\nReturn: True if z is a linear combination of x and y. False otherwise.\nHint: z is a linear combination of x and y if and only if Ax + By = z for some integers A and B.",
+        "header": "function(ints){\n\n}",
         "testcases":
           [
             {
-              "input": "abcdefg",
-              "output": "gfedcba"
+              "input": {x: 2, y: 4, z: 19},
+              "output": false
             },
             {
-              "input": "hello  world",
-              "output": "dlrow  olleh"
+              "input": {x: 3, y: 16, z: 19},
+              "output": true
+            },
+            {
+              "input": {x: 14, y: 17, z: 262},
+              "output": true
+            },
+            {
+              "input": {x: 104, y: 109, z: 200},
+              "output": false
             }
           ]
         },
-        {"name": "String Reverse5",
-        "text": "Write a function that takes a string as input, and outputs the reverse.",
+        {"name": "X-Clusters",
+        "text": "Input: A string. Output: The number of clusters (any size) of the letter 'x'. Hint: So \"xxyxabcxxxhellox\" would return 4. ",
+        "header": "function(string){\n\n}",
         "testcases":
           [
             {
-              "input": "abcdefg",
-              "output": "gfedcba"
+              "input": "xxyxabcxxxhellox",
+              "output": 4
             },
             {
-              "input": "hello  world",
-              "output": "dlrow  olleh"
+              "input": "xxxxxxxxxx",
+              "output": 1
+            },
+            {
+              "input": "xxxxxabcxxxxx",
+              "output": 2
+            },
+            {
+              "input": "aaaaa4x4aaaaaaa",
+              "output": 1
+            },
+            {
+              "input": "abcdefg",
+              "output": 0
             }
           ]
         } 
@@ -382,7 +411,7 @@
         
         getWins(session.id, user.id, function(wins){
           userWins = wins;
-          challenge = challenges[challengeNameToIndex(getCurrentRound().challengeName)];
+          //challenge = challenges[challengeNameToIndex(getCurrentRound().challengeName)];
           getWins(session.id, opponent.id, function(wins){
             opponentWins = wins;
             $("#your_name").html(user.name);
@@ -397,11 +426,23 @@
 
       function clearScreen() {
         if(opponentFirepadReady){
-          opponentFirepad.setText("");
+          if(challenge){
+           
+            opponentFirepad.setText(challenge.header);
+          }
+          else{
+            opponentFirepad.setText("");
+          }
         }
         if(userFirepadReady){
-          userFirepad.setText("");
+          if(challenge){
+            userFirepad.setText(challenge.header);
+          }
+          else{
+            userFirepad.setText("");
+          }
         }
+        
       }
 
 
@@ -615,19 +656,24 @@
           powrRefOpponent.child('Magnifier').set(0);
           powrRefOpponent.child('powrUsed').set(null);
           
-          powrRefOpponent.on('child_changed',function(data){
-            
-            oppPowrs = data.val();
-            
-            updateScreen();
-            
-            if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
-              
-              usePowrOnSelf();
-              
-              powrRefOpponent.child('powrUsed').set(null);
+          var swi2 = false;
+          powrRefOpponent.child('powrUsed').on('value',function(data){
+            if(swi2 == false){
+              swi2 = true;
             }
-            
+            else{
+              
+              oppPowrs = data.val();
+              
+              updateScreen();
+              
+              if(oppPowrs != null){ //Opponent just used a powr!!11!1one
+                
+                usePowrOnSelf();
+                
+                powrRefOpponent.child('powrUsed').set(null);
+              }
+            }
           });
           
           
@@ -681,6 +727,7 @@
                         showEndMatchModal(winnerId);
                       }
                       else{
+                        challenge = challenges[challengeNameToIndex(getCurrentRound().challengeName)];
                         FB("/session/" + session.id).once("value",function(data){
                           session = data.val();
                           session.id = data.name();
@@ -784,15 +831,24 @@
                 setOpponent(i,function(){
                 powrRefUser = FB('/session/' + new_session.id + '/users/' + user.id + '/powrs');
                 powrRefOpponent = FB('/session/' + new_session.id + '/users/' + opponent.id + '/powrs');
-                powrRefOpponent.on('child_changed',function(data){
-              
-                  oppPowrs = data.val();
-                  updateScreen();
-                  if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
+                var swi = false;
+                powrRefOpponent.child('powrUsed').on('value',function(data){
+                  if(swi == false){
+                    swi = true;
+                  }
+                  else{
+                   
+                    oppPowrs = data.val();
                     
-                    usePowrOnSelf();
+                    updateScreen();
                     
-                    powrRefOpponent.child('powrUsed').set(null);
+                    if(oppPowrs != null){ //Opponent just used a powr!!11!1one
+                      
+                      
+                      usePowrOnSelf();
+                      
+                      powrRefOpponent.child('powrUsed').set(null);
+                    }
                   }
                   
                 
@@ -822,6 +878,7 @@
                           showEndMatchModal(winnerId);
                         }
                         else{
+                          challenge = challenges[challengeNameToIndex(getCurrentRound().challengeName)];
                           FB("/session/" + new_session.id).once("value",function(data){
                             session = data.val();
                             session.id = data.name();
