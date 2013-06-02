@@ -162,6 +162,9 @@
       <div onclick="usePowr('Magnifier');" style="margin-top:20px;" class="icon magnify">
         <img style="height:30px;width:30px;" src="magnify.png"/>
       </div>
+      <div onclick="usePowr('Shrink Ray');" style="margin-top:20px;" class="icon shrink">
+        <img style="height:30px;width:30px;" src="shrinkray.png"/>
+      </div>
     </div>
     <div style="position:relative;width:370px;display:inline-block;">
       <div style="vertical-align:top;margin-left:20px;">
@@ -174,7 +177,7 @@
           <a style="color:black;" class="submit-button" onclick="submitCode();">Submit</a>
         </div>
       </div>
-      <div id="user-cover" style="display:none;position:absolute;top:0;left:0;height:100%;width:100%;">
+      <div id="user-cover" style="display:none;z-index:9999;position:absolute;top:0;left:0;height:100%;width:100%;">
       </div>
     </div>
     <div id="challenge-container" style="margin-left:30px;width:150px;display:inline-block;vertical-align:top;">
@@ -194,15 +197,7 @@
           <span style="color:#E55;" class="wins">Wins:</span> <span id="opponent-wins">0</span>
         </div>
       </div>
-      <div id="opponent-cover" style="position:absolute;top:0;left:0;height:100%;width:100%;">
-      </div>
-    </div>
-    <div style="margin-left:10px;margin-top:40px;vertical-align:top;display:inline-block;" id="user-powrs">
-      <div class="ice">
-        <img style="height:30px;width:30px;" src="ice.png"/>
-      </div>
-      <div style="margin-top:20px;" class="magnify">
-        <img style="height:30px;width:30px;" src="magnify.png"/>
+      <div id="opponent-cover" style="z-index:9999;position:absolute;top:0;left:0;height:100%;width:100%;">
       </div>
     </div>
   </div>
@@ -386,17 +381,14 @@
           $("#user-cover").clearQueue();
           $("#opponent-cover").clearQueue();
           if(isVictim){
+            codeMirror1.getInputField().blur();
+            $("#user-cover").show();
             $("#user-cover").css({"background-color":"#68E","opacity":".4"});
             $("#user-cover").animate({
                 opacity: 0
               }, 5000, function() {
-                // Animation complete.
+                $("#user-cover").hide();
               });
-            $("#user-cover").show();
-            setTimeout(function(){
-              $("#user-cover").css({"background-color":""});
-              $("#user-cover").hide();
-            },5000);
           }
           else{
            $("#opponent-cover").css({"background-color":"#68E","opacity":".4"})
@@ -405,17 +397,47 @@
               }, 5000, function() {
                 // Animation complete.
               });
-           setTimeout(function(){
-              $("#opponent-cover").css({"background-color":""});
-            },5000);
           }
         },
         "Shrink Ray" : function(isVictim){
-          //opponentFirepad ???
-          alert("SHRINK: " + isVictim.toString());
+          $("#firepad2 .CodeMirror").clearQueue();
+          $("#firepad2 .CodeMirror").clearQueue();
+          if(isVictim){
+            $("#firepad1 .CodeMirror").css({"font-size":"1px"});
+            $("#firepad1 .CodeMirror").animate({
+                "font-size": 14
+              }, 10000, function() {
+                $("#user-cover").hide();
+              });
+          }
+          else{
+            $("#firepad2 .CodeMirror").css({"font-size":"1px"});
+            $("#firepad2 .CodeMirror").animate({
+                "font-size": 14
+              }, 10000, function() {
+                // Animation complete.
+              });
+          }
         },
         "Magnifier" : function(isVictim){
-          alert("Magnifier: " + isVictim.toString());
+          $("#firepad2 .CodeMirror").clearQueue();
+          $("#firepad2 .CodeMirror").clearQueue();
+          if(isVictim){
+            $("#firepad1 .CodeMirror").css({"font-size":"40px"});
+            $("#firepad1 .CodeMirror").animate({
+                "font-size": 14
+              }, 10000, function() {
+                $("#user-cover").hide();
+              });
+          }
+          else{
+            $("#firepad2 .CodeMirror").css({"font-size":"40px"});
+            $("#firepad2 .CodeMirror").animate({
+                "font-size": 14
+              }, 10000, function() {
+                // Animation complete.
+              });
+          }
         }
       }
 
