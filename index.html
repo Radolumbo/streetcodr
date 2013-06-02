@@ -503,10 +503,8 @@
                 session = data.val();
                 session.id = data.name();
                 updateScreen(true);
-                });
-
-          //HOLEE SHEET PROB BETTER DELTET THIS****************************************/
-          var rounds = FB("/session/" + new_session.id + "/round");
+                  //HOLEE SHEET PROB BETTER DELTET THIS****************************************/
+          var rounds = FB("/session/" + session.id + "/round");
                 rounds.on("child_added",function(round){
                   isSessionOver(function(isOver,winnerId){
                     if(isOver){
@@ -514,7 +512,7 @@
                       showEndMatchModal(winnerId);
                     }
                     else{
-                      FB("/session/" + new_session.id).once("value",function(data){
+                      FB("/session/" + session.id).once("value",function(data){
                         session = data.val();
                         session.id = data.name();
                         updateScreen(true);
@@ -523,13 +521,17 @@
                   });
                 });
           //*************************************************************//
+                });
+
+        
         }
         else{
           FB('/session/' + session.id + '/round/' + (roundNumber - 1) + '/winner').set(winnerId);
           getWins(sessionId, winnerId,function(wins){
             if( wins >= winLimit){
               //session over!
-              showEndMatchModal(winnerId);
+              //showEndMatchModal(winnerId);
+              FB('/session/' + sessionId + '/round/end').set("1");
             }
             else{ //Not the last round yet
               challenge = getChallenge();
