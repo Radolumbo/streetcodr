@@ -268,12 +268,13 @@
         
         getWins(session.id, user.id, function(wins){
           userWins = wins;
+          challenge = challenges[challengeNameToIndex(getCurrentRound().challengeName)];
           getWins(session.id, opponent.id, function(wins){
             opponentWins = wins;
             $("#your_name").html(user.name);
             $("#their_name").html(opponent.name);
             $("#challenge-name").html(getCurrentRound().challengeName);
-            $("#challenge-text").html(challenges[challengeNameToIndex(getCurrentRound().challengeName)].text);
+            $("#challenge-text").html(challenge.text);
             $("#user-wins").html(userWins);
             $("#opponent-wins").html(opponentWins);
           });
