@@ -806,7 +806,7 @@
                       showEndMatchModal(winnerId);
                     }
                     else{
-                      if(){
+                      if(getCurrentRound().id > 1){
                         transition(function(){
                           FB("/session/" + new_session.id).once("value",function(data){
                             session = data.val();
