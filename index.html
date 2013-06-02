@@ -486,7 +486,7 @@
       function clearScreen() {
         if(opponentFirepadReady){
           if(challenge){
-           
+            opponentFirepad.setText("");
             opponentFirepad.setText(challenge.header);
           }
           else{
@@ -495,6 +495,7 @@
         }
         if(userFirepadReady){
           if(challenge){
+            userFirepad.setText("");
             userFirepad.setText(challenge.header);
           }
           else{
