@@ -17,8 +17,29 @@
       font-size: 30px;
     }
 
+    #firepad1{
+      width: 350px;
+      height: 400px;
+    }
+    #firepad2{
+      width: 350px;
+      height: 400px;
+    }
+
+    .submit-button {
+    font: bold 11px Arial;
+    text-decoration: none;
+    background-color: #EEEEEE;
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+   }
+
     .name{
-      color:#66F;
+      color:#67C8FF;
       font-family: "Lucida Console", Monaco, monospace;
       font-size: 20px;
     }
@@ -114,9 +135,9 @@
       <span class="name" id="your_name"></span> (You):
       <div id="firepad1"></div>
       <div>
-        Your wins: <span id="user-wins">0</span>
+        Wins: <span id="user-wins">0</span>
       </div>
-      <a href="#" onclick="submitCode();">SUBMIT</a>
+      <a href="#" class="submit-button" onclick="submitCode();">SUBMIT</a>
     </div>
     <div id="challenge-container" style="width:150px;display:inline-block;vertical-align:top;">
       <div id="challenge-name">
@@ -124,11 +145,15 @@
       <div id="challenge-text">
       </div>
     </div>
-    <div style="vertical-align:top;display:inline-block;margin-left:20px;">
-      <span class="name"  id="their_name"></span>(Them):
-      <div id="firepad2"></div>
-      <div>
-        Their wins: <span id="opponent-wins">0</span>
+    <div style="position:relative;width:350px;display:inline-block;">
+      <div style="vertical-align:top;margin-left:20px;">
+        <span class="name"  id="their_name"></span>(Them):
+        <div id="firepad2"></div>
+        <div>
+          Wins: <span id="opponent-wins">0</span>
+        </div>
+      </div>
+      <div style="position:absolute;top:0;left:0;height:100%;width:100%;">
       </div>
     </div>
   </div>
