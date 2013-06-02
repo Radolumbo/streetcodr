@@ -48,6 +48,10 @@
     padding: 2px 6px 2px 6px;
    }
 
+   .submit-button:hover{
+    cursor: pointer;
+   }
+
     .name{
       color:#67C8FF;
       font-family: "Lucida Console", Monaco, monospace;
@@ -148,7 +152,7 @@
         <span class="wins">Wins:</span> <span id="user-wins">0</span>
       </div>
       <div style="width:100px;margin-top:20px;margin:0 auto;">
-        <a style="color:black;" href="#" class="submit-button" onclick="submitCode();">Submit</a>
+        <a style="color:black;" class="submit-button" onclick="submitCode();">Submit</a>
       </div>
     </div>
     <div id="challenge-container" style="width:150px;display:inline-block;vertical-align:top;">
@@ -178,23 +182,23 @@
       </div>
     </div>
   <div id="modals" style="display:none;">
-    <div id="user-name-modal" style="text-align:center;height:210px;width:400px;padding-top:10px;">
+    <div id="user-name-modal" style="text-align:center;height:210px;width:400px;">
         <h2>Welcome to StreetCodr!</h2>
         <label style="font-size: 26px;" for="name">Enter your name</label><br>
         <input style="width:200px;height:30px;font-size:20px;" type="text" name="name" id="name">
         <br><br>
         <button style="font-size:20px;width:60px;height:30px" type="button">Go</button>
     </div>
-    <div id="new-match-modal" style="text-align:center;height:210;width:400;padding-top:10px;">
+    <div id="new-match-modal" style="text-align:center;height:210;width:400;">
         <h2>Welcome, <span id="name"></span></h2>
         <div class="wins">Wins: <span id="wins"></span></div>
         <div class="wins">Losses: <span id="losses"></span></div>
         <br>
         <button style="font-size:20px;width:180px;height:60px" type="button">Find an opponent</button>
     </div>
-    <div id="end-match-modal" style="text-align:center;height:200px;width:200px;padding-top:100px;">
+    <div id="end-match-modal" style="text-align:center;height:200px;width:400px;padding-top:10px;">
         <h2><span id="name"></span> wins!</h2>
-        <button type="button">Click to play again</button>
+        <button style="font-size:20px;width:180px;height:60px" type="button">Click to play again</button>
     </div>
   </div>
     <script>
@@ -217,7 +221,28 @@
       var codeMirror2 = null;
       var powrRefUser = "";
       var powrRefOpponent = "";
-      
+
+
+      function resetGlobals(){
+         opponent = null;
+         session = null;
+         winLimit = 3;
+         usedChallenges = [];
+         roundNumber = 1;
+         challenge = null;
+         host = false;
+         userFirepad = null;
+         opponentFirepad = null;
+         userFirepadReady = false;
+         opponentFirepadReady = false;
+         userWins = 0;
+         opponentWins = 0;
+         codeMirror1 = null;
+         codeMirror2 = null;
+         powrRefUser = "";
+         powrRefOpponent = "";
+      }
+
       //Challenges data
       var challenges = [
         {"name": "String Reverse",
@@ -336,11 +361,17 @@
           }, 100);
       }
 
-      function transition(callback,seconds){
+      function transition(callback,seconds,message){
+        popup("<div style='padding:30px;font-size:40px;'>" + (message ? message : "") + "</div><div style='width:30px;padding-bottom:20px;font-size:100px;margin:0 auto;'>" + seconds + "</div>");
         var timer = setInterval(function(){
-
-        }, timer);
-        popup("");
+          seconds--;
+          popup("<div style='padding:30px;font-size:40px;'>" + (message ? message : "") + "</div><div style='width:30px;padding-bottom:20px;font-size:100px;margin:0 auto;'>" + seconds + "</div>");
+          if(seconds < 1){
+            clearInterval(timer);
+            setTimeout(function(){close_popup()},100);
+            callback();
+          }
+        }, seconds * 300);
       }
       
       function updateScreen(clear) {
@@ -622,34 +653,34 @@
       function nextRound(sessionId, roundNumber, winnerId){
         roundNumber++;
         if(roundNumber == 1){ //It's the first round
-          challenge = getChallenge();
-          usedChallenges.push(challenge.name);
-          FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
-          FB('/session/' + sessionId).once('value',function(data){
-                session = data.val();
-                session.id = data.name();
-                updateScreen(true);
-                  //HOLEE SHEET PROB BETTER DELTET THIS****************************************/
-          var rounds = FB("/session/" + session.id + "/round");
-                rounds.on("child_added",function(round){
-                  isSessionOver(function(isOver,winnerId){
-                    if(isOver){
-                      rounds.off();
-                      showEndMatchModal(winnerId);
-                    }
-                    else{
-                      FB("/session/" + session.id).once("value",function(data){
-                        session = data.val();
-                        session.id = data.name();
-                        updateScreen(true);
-                      }); 
-                    }
+          transition(function(){
+            challenge = getChallenge();
+            usedChallenges.push(challenge.name);
+            FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
+            FB('/session/' + sessionId).once('value',function(data){
+                  session = data.val();
+                  session.id = data.name();
+                  updateScreen(true);
+                    //HOLEE SHEET PROB BETTER DELTET THIS****************************************/
+            var rounds = FB("/session/" + session.id + "/round");
+                  rounds.on("child_added",function(round){
+                    isSessionOver(function(isOver,winnerId){
+                      if(isOver){
+                        rounds.off();
+                        showEndMatchModal(winnerId);
+                      }
+                      else{
+                        FB("/session/" + session.id).once("value",function(data){
+                          session = data.val();
+                          session.id = data.name();
+                          updateScreen(true);
+                        }); 
+                      }
+                    });
                   });
-                });
-          //*************************************************************//
-                });
-
-        
+            //*************************************************************//
+                  });
+           },3,"Found opponent! Starting in...");
         }
         else{
           FB('/session/' + session.id + '/round/' + (roundNumber - 1) + '/winner').set(winnerId);
@@ -660,14 +691,16 @@
               FB('/session/' + sessionId + '/round/end').set("1");
             }
             else{ //Not the last round yet
-              challenge = getChallenge();
-              usedChallenges.push(challenge.name);
-              FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
-              FB('/session/' + sessionId).once('value',function(data){
-                session = data.val();
-                session.id = data.name();
-                updateScreen(true,winnerId);
-                });
+              transition(function(){
+                challenge = getChallenge();
+                usedChallenges.push(challenge.name);
+                FB('/session/' + sessionId + '/round/' + roundNumber + '/challengeName').set(challenge.name);
+                FB('/session/' + sessionId).once('value',function(data){
+                  session = data.val();
+                  session.id = data.name();
+                  updateScreen(true,winnerId);
+                  });
+            },3,(winnerId == user.id ? user.name : opponent.name) + " won! Next round in...");
             }   
           });
         }
@@ -708,6 +741,7 @@
       
 
       function getOpponent(){
+        resetGlobals();
         getUserFromQueue(function(opponentId){
           if(!opponentId) {
             addUserToQueue(waitForSession);
@@ -722,7 +756,7 @@
       }
 
       function waitForSession() {
-        $("#new-match-modal").html("<span style='padding-top:80px;font-size:30px;'>Waiting...</span>");
+        $("#new-match-modal").html("<div style='padding-top:80px;font-size:30px;'>Waiting...</div>");
         var sessionRef = FB("/session");
         sessionRef.once('child_changed',function(new_session){
           close_popup();
