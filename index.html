@@ -294,13 +294,13 @@
 
       //Powr hash
       var powrs = {
-        "Freeze" : function(){
+        "Freeze" : function(isVictim){
           
         },
-        "Shrink Ray" : function(){
+        "Shrink Ray" : function(isVictim){
           //opponentFirepad ???
         },
-        "Magnifier" : function(){
+        "Magnifier" : function(isVictim){
           
         }
       }
@@ -579,16 +579,15 @@
             
             oppPowrs = data.val();
             
+            updateScreen();
+            
             if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
               
               usePowrOnSelf();
               
               powrRefOpponent.child('powrUsed').set(null);
             }
-            else{
-              updateScreen();
-            }
-          
+            
           });
           
           
@@ -601,7 +600,19 @@
         });
       }
       
+      function getPowrUsed(callback){
+        powrRefOpponent.child('powrUsed').once('value', function(data){
+            callback(data.val());
+          });
+      };
+      
       function usePowrOnSelf(){
+      
+        getPowrUsed(function(name){
+        
+          powrs[name](true);
+        
+        });
       
       }
       
@@ -665,7 +676,9 @@
       
       function usePowr(name){
         
+        powrs[name](false);
         
+        powrRefUser.child('powrUsed').set(name);
         
       }
       
@@ -724,16 +737,14 @@
               powrRefOpponent.on('child_changed',function(data){
             
                 oppPowrs = data.val();
-                
+                updateScreen();
                 if(oppPowrs.powrUsed != null){ //Opponent just used a powr!!11!1one
                   
                   usePowrOnSelf();
                   
                   powrRefOpponent.child('powrUsed').set(null);
                 }
-                else{
-                  updateScreen();
-                }
+                
               
               });
               var firepadRef1 = FB('/users/' + user.id + '/code');
