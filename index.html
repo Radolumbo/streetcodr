@@ -608,8 +608,11 @@
           if(!opponentId) {
             addUserToQueue(waitForSession);
           }
-          else {
+          else if(opponentId != user.id){
             createSession(opponentId);
+          }
+          else{
+            addUserToQueue(waitForSession);
           }
         });  
       }
