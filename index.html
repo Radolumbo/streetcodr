@@ -396,6 +396,7 @@
         var oppRef = sessionRef.child(opponentId);
         
         var host = true;
+        close_popup();
         
         setOpponent(opponentId,function(){
           //Initialize their power ups to empty
@@ -481,8 +482,10 @@
       }
 
       function waitForSession() {
+        $("#new-match-modal").html("Waiting...");
         session = FB("/session");
         session.once('child_changed',function(new_session){
+          close_popup();
           var users = new_session.val().users;
           for(var i in users){
             if(i!=user.id){
