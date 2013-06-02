@@ -7,8 +7,34 @@
   <script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script  type="text/javascript" src="http://cdn.jsdelivr.net/jquery.cookie/1.3/jquery.cookie.js"></script>
   <style>
+    body{
+      background-color: #333;
+      color:#DDD;
+    }
+    h1{
+      color:#E55;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 30px;
+    }
+
+    .name{
+      color:#66F;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 20px;
+    }
+
+    #challenge-name{
+      margin-top: 15px;
+      color:#E55;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 15px;
+    }
+
+    #challenge-text {
+      font-family: "Lucida Console", Monaco, monospace;
+    }
     .firepad {
-      width: 300px;
+      width: 350px;
       height: 400px;
       background-color: #DDD;
     }
@@ -83,25 +109,27 @@
     <h1>StreetCodr</h1>
   </div>
   <hr>
-  <div style="display:inline-block;margin-right:20px;">
-    <span id="your_name"></span> (You):
-    <div id="firepad1"></div>
-    <div>
-      Your wins: <span id="user-wins">0</span>
+  <div style="width:900px;margin:0 auto;">
+    <div style="vertical-align:top;display:inline-block;margin-right:20px;">
+      <span class="name" id="your_name"></span> (You):
+      <div id="firepad1"></div>
+      <div>
+        Your wins: <span id="user-wins">0</span>
+      </div>
+      <a href="#" onclick="submitCode();">SUBMIT</a>
     </div>
-    <a href="#" onclick="submitCode();">SUBMIT</a>
-  </div>
-  <div id="challenge-container" style="display:inline-block;vertical-align:top;">
-    <div id="challenge-name">
+    <div id="challenge-container" style="width:150px;display:inline-block;vertical-align:top;">
+      <div id="challenge-name">
+      </div>
+      <div id="challenge-text">
+      </div>
     </div>
-    <div id="challenge-text">
-    </div>
-  </div>
-  <div style="display:inline-block;">
-    <span id="their_name"></span>(Them):
-    <div id="firepad2"></div>
-    <div>
-      Their wins: <span id="opponent-wins">0</span>
+    <div style="vertical-align:top;display:inline-block;margin-left:20px;">
+      <span class="name"  id="their_name"></span>(Them):
+      <div id="firepad2"></div>
+      <div>
+        Their wins: <span id="opponent-wins">0</span>
+      </div>
     </div>
   </div>
   <div id="dialog-overlay">
@@ -456,14 +484,14 @@
 
       function createSession(opponentId){
         var firepadRef1 = FB('/users/' + user.id + '/code');
-        var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
+        var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
         userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
             { richTextShortcuts: true, richTextToolbar: false });
         userFirepad.on('ready', function() {
                 userFirepadReady = true;
               });
         var firepadRef2 = FB('/users/' + opponentId + "/code");
-        var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
+        var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
         opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
             { richTextShortcuts: true, richTextToolbar: false });
        opponentFirepad.on('ready', function() {
@@ -598,14 +626,14 @@
             if(i!=user.id){
               setOpponent(i,function(){
               var firepadRef1 = FB('/users/' + user.id + '/code');
-              var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true });
+              var codeMirror1 = CodeMirror(document.getElementById('firepad1'), { lineWrapping: true,lineNumbers: true });
               userFirepad = Firepad.fromCodeMirror(firepadRef1, codeMirror1,
                   { richTextShortcuts: true, richTextToolbar: false });
               userFirepad.on('ready', function() {
                 userFirepadReady = true;
               });
               var firepadRef2 = FB('/users/' + opponent.id + "/code");
-              var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true });
+              var codeMirror2 = CodeMirror(document.getElementById('firepad2'), { lineWrapping: true,lineNumbers: true });
               opponentFirepad = Firepad.fromCodeMirror(firepadRef2, codeMirror2,
                  { richTextShortcuts: true, richTextToolbar: false });
               opponentFirepad.on('ready', function() {
