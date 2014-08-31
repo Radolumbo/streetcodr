@@ -19,5 +19,9 @@
     "socket.io": "*",
     "express-helpers": "*",
     "indexof": "*"
+  },
+  "engines": {
+    "node": *,
+    "npm": *
   }
 }
