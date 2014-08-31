@@ -21,7 +21,7 @@
     "indexof": "*"
   },
   "engines": {
-    "node": *,
-    "npm": *
+    "node": "*",
+    "npm": "*"
   }
 }
